@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import World from './components/map.js'
+import World from './components/world.js'
 
 class Home extends Component {
 
