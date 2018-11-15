@@ -1,13 +1,21 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-const World = ({ matrix }) => (
+class World extends Component {
+
+  constructor() {
+    super()
+    this.state = {}
+  }
+
+render() {
+
   let i = 0
   let j = 0
 
   <table className="list-group">
     { matrix.map(row => (
-      { i++ }
+     { i++ }
       <tr
         key={i}
       >
@@ -22,7 +30,7 @@ const World = ({ matrix }) => (
       </tr>
     ))}
   </table>
-)
+}
 
 export default connect(state => state)(World)
 

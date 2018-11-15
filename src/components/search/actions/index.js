@@ -33,7 +33,7 @@ const getChangeText = events => ({
 })
 
 export const getEventsData = (searchField) => {
-const apiUrl = `https://opendata.paris.fr/api/records/1.0/search/?dataset=evenements-a-paris&facet=placename&facet=department&facet=region&facet=city&facet=date_start&facet=date_end&facet=pricing_info&sort=date_start&q=${searchField}`
+  const apiUrl = `https://opendata.paris.fr/api/records/1.0/search/?dataset=evenements-a-paris&facet=placename&facet=department&facet=region&facet=city&facet=date_start&facet=date_end&facet=pricing_info&sort=date_start&q=${searchField}`
   axios.get(apiUrl).then((response) => {
     store.dispatch(getLastEvents(response.records))
   }).catch(() => {
