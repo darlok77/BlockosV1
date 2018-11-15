@@ -12,7 +12,7 @@
     "url": "git+https://github.com/darlok77/Blockos.git"
   },
   "author": "Guillaume dalleau",
-    "license": "ISC",
+  "license": "ISC",
   "dependencies": {
     "axios": "^0.18.0",
     "bootstrap": "^4.1.3",

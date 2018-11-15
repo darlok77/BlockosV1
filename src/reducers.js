@@ -1,9 +1,7 @@
 import { combineReducers } from 'redux'
 
-import news from './components/news/reducer'
-import search from './components/search/reducer'
+import home from './components/home/reducer'
 
 export default combineReducers({
-  news,
-  search
+  home
 })
