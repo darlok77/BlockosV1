@@ -5,7 +5,7 @@ import World from './components/world.js'
 
 class Home extends Component {
   render() {
-  	const { home } = this.props
+    const { home } = this.props
 
     return (
       <div>

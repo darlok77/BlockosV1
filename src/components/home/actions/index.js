@@ -1,5 +1,3 @@
-import axios from 'axios'
-
 import actionsType from './actions-type'
 import store from '../../../store'
 
@@ -10,7 +8,7 @@ const getMap = events => ({
 
 export const getEventsMap1 = () => {
   const map1 = [
-	  [1, 1, 1, 0],
+    [1, 1, 1, 0],
     [0, 0, 0, 0],
     [0, 1, 1, 0],
     [0, 0, 0, 1]

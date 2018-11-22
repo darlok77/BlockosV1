@@ -1,35 +1,36 @@
-import React from 'react'
+import { Component, React } from 'react'
 import { connect } from 'react-redux'
 
 class World extends Component {
-
   constructor() {
     super()
     this.state = {}
   }
 
-render() {
+  render() {
+    const { world } = this.state
+    console.log(world)
+    console.log('blaaaaaaa')
 
-  let i = 0
-  let j = 0
+    return (
+      <table className="list-group">
+        { world.map((row, rowIndex) => (
 
-  <table className="list-group">
-    { matrix.map(row => (
-     { i++ }
-      <tr
-        key={i}
-      >
-      { row.map(col => (
-      { j++ }
-      <td
-        key={`${i}/${j}`}
-      >
-        { col }
-      </td>
-    ))}
-      </tr>
-    ))}
-  </table>
+          <tr
+            key={rowIndex}
+          >
+            { row.map((col, colIndex) => (
+              <td
+                key={`${rowIndex}/${colIndex}`}
+              >
+                { col }
+              </td>
+            ))}
+          </tr>
+        ))}
+      </table>
+    )
+  }
 }
 
 export default connect(state => state)(World)

@@ -23,6 +23,7 @@
     "import/no-unresolved": "off",
     "comma-dangle": [2, "never"],
     "class-methods-use-this": "off",
+    "linebreak-style": ["error", "windows"],
     "no-continue": "off",
     "no-multiple-empty-lines": ["error", { "max": 1 }],
     "no-nested-ternary": "off",
