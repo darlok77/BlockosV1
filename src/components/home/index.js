@@ -5,14 +5,22 @@ import World from './components/world.js'
 
 class Home extends Component {
   render() {
-    const { home } = this.props
+    const { world } = this.props
+    const { player } = this.props
 
     return (
       <div>
-        <World matrix={home.matrix} />
+        <World land={world} player={player} />
       </div>
     )
   }
 }
+function mapStateToProps(state) {
+  return {
+    world: state.home.world,
+    player: state.home.player,
+    number: state.home.number
+  }
+}
 
-export default connect(state => state)(Home)
+export default connect(mapStateToProps)(Home)

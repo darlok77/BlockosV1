@@ -1,15 +1,7 @@
 $text: rgb(58, 58, 58);
 
-.posts {
-  color: $text !important;
-}
-.posts:hover {
-   color: rgb(29, 25, 25) !important;
-}
-
-li{
-  list-style-type: none; 
-}
-
-.imageEvent{
+.borderTab{
+  border: 1px solid black;
+  width: 10px;
+  text-align: center;
 }
