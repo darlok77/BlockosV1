@@ -2,33 +2,84 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 class World extends React.Component {
-  handleClick(event, player) {
-    // event.preventDefault()
-    // console.log(event.target)
-    console.log(player)
+  constructor(props) {
+    super(props)
+    this.state = {
+      player: props.player,
+      number: props.number
+    }
+  }
 
-    switch (player) {
-      case 1:
-        event.target.style.color = 'blue'
+  /* setInitilBlock(e) {
+    const el = e
+    switch (el.textContent[0]) {
+      case 'W':
+        el.style.backgroundColor = 'aqua'
         break
-      case 2:
-        event.target.style.color = 'red'
+      case 'X':
+        el.style.backgroundColor = 'black'
         break
-      case 3:
-        event.target.style.color = 'grenn'
+      case 'V':
+        el.style.backgroundColor = 'lime'
         break
-      case 4:
-        event.target.style.color = 'yellow'
+      case 'T':
+        el.style.backgroundColor = 'gray'
+        break
+      case 'Z':
+        el.style.backgroundColor = 'purple'
         break
       default:
-        event.target.style.color = 'white'
+        el.style.backgroundColor = 'white'
     }
+  } */
+
+  nextPlayer(p) {
+    let player = p
+    if (player >= 4) {
+      player = 1
+    } else {
+      player += 1
+    }
+
+    this.state.player = player
+    this.setState({
+      player: player * 1
+    })
+  }
+
+  handleClick(event, player, number) {
+    const el = event.target
+    const block = el.textContent
+    console.log(block)
+    console.log(number)
+    switch (player) {
+      case 1:
+        el.style.backgroundColor = 'blue'
+        el.textContent = 1
+        break
+      case 2:
+        el.style.backgroundColor = 'red'
+        el.textContent = 2
+        break
+      case 3:
+        el.style.backgroundColor = 'green'
+        el.textContent = 3
+        break
+      case 4:
+        el.style.backgroundColor = 'yellow'
+        el.textContent = 4
+        break
+      default:
+        el.style.backgroundColor = 'white'
+    }
+
+    this.nextPlayer(player)
   }
 
   render() {
     const { land } = this.props
-    const { player } = this.props
-    console.log(player)
+    const { player } = this.state
+    const { number } = this.state
 
     return (
       <table>
@@ -41,7 +92,8 @@ class World extends React.Component {
                 <td
                   className="borderTab"
                   key={`${rowIndex}/${colIndex}`}
-                  onClick={event => this.handleClick(event, player)}
+                  id={`${rowIndex}/${colIndex}`}
+                  onClick={event => this.handleClick(event, player, number)}
                 >
                   { col }
                 </td>
