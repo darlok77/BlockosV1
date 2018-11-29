@@ -1,3 +1,3 @@
 export default {
-  GET_MAP: 'GET_MAP'
+  INIT_BLOCK: 'INIT_BLOCK'
 }

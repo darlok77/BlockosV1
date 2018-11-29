@@ -10,28 +10,72 @@ class World extends React.Component {
     }
   }
 
-  /* setInitilBlock(e) {
-    const el = e
-    switch (el.textContent[0]) {
-      case 'W':
-        el.style.backgroundColor = 'aqua'
+  componentDidMount() {
+    this.initBlock()
+    this.blockPlayable(1)
+  }
+
+  blockPlayable(player) {
+    const { world } = this.props
+    let el
+    let colorBlock
+
+    switch (player) {
+      case 1:
+        colorBlock = 'blue'
         break
-      case 'X':
-        el.style.backgroundColor = 'black'
+      case 2:
+        colorBlock = 'red'
         break
-      case 'V':
-        el.style.backgroundColor = 'lime'
+      case 3:
+        colorBlock = 'green'
         break
-      case 'T':
-        el.style.backgroundColor = 'gray'
-        break
-      case 'Z':
-        el.style.backgroundColor = 'purple'
+      case 4:
+        colorBlock = 'yellow'
         break
       default:
-        el.style.backgroundColor = 'white'
+        colorBlock = 'white'
     }
-  } */
+
+    world.forEach((row, rowIndex) => {
+      row.forEach((col, colIndex) => {
+        el = document.querySelector(`#I${rowIndex}_${colIndex}`)
+
+        if (el.textContent === player.toString()) {
+          // el.style.pointerEvents = 'none'
+          el.style.backgroundColor = 'blue'
+        } else if (!this.friendlyNeighbor(rowIndex, colIndex, colorBlock)) {
+          el.style.pointerEvents = 'none'
+          el.style.backgroundColor = 'silver'
+        }
+      })
+    })
+    console.log(`el.textContent : ${el.textContent}`)
+    console.log(`player : ${player}`)
+    console.log(`colorBlock : ${colorBlock}`)
+  }
+
+  friendlyNeighbor(x, y, color) {
+    // const elPrincipal = document.querySelector(`#I${x}_${y}`)
+    const elLeft = document.querySelector(`#I${x}_${y - 1}`)
+    const elRight = document.querySelector(`#I${x}_${y + 1}`)
+    const elTop = document.querySelector(`#I${x - 1}_${y}`)
+    const elBottom = document.querySelector(`#I${x + 1}_${y}`)
+
+    if (elLeft !== null && elLeft.style.backgroundColor === color) {
+      return true
+    }
+    if (elRight !== null && elRight.style.backgroundColor === color) {
+      return true
+    }
+    if (elTop !== null && elTop.style.backgroundColor === color) {
+      return true
+    }
+    if (elBottom !== null && elBottom.style.backgroundColor === color) {
+      return true
+    }
+    return false
+  }
 
   nextPlayer(p) {
     let player = p
@@ -40,6 +84,7 @@ class World extends React.Component {
     } else {
       player += 1
     }
+    this.blockPlayable(player)
 
     this.state.player = player
     this.setState({
@@ -47,11 +92,53 @@ class World extends React.Component {
     })
   }
 
+  initBlock() {
+    const { world } = this.props
+    let el
+
+    world.forEach((row, rowIndex) => {
+      row.forEach((col, colIndex) => {
+        el = document.querySelector(`#I${rowIndex}_${colIndex}`)
+        switch (el.textContent[0]) {
+          case 'W':
+            el.style.backgroundColor = 'aqua'
+            break
+          case 'X':
+            el.style.backgroundColor = 'black'
+            break
+          case 'V':
+            el.style.backgroundColor = 'lime'
+            break
+          case 'T':
+            el.style.backgroundColor = 'gray'
+            break
+          case 'Z':
+            el.style.backgroundColor = 'purple'
+            break
+          case '1':
+            el.style.backgroundColor = 'blue'
+            break
+          case '2':
+            el.style.backgroundColor = 'red'
+            break
+          case '3':
+            el.style.backgroundColor = 'green'
+            break
+          case '4':
+            el.style.backgroundColor = 'yellow'
+            break
+          default:
+            el.style.backgroundColor = 'white'
+        }
+      })
+    })
+  }
+
   handleClick(event, player, number) {
     const el = event.target
     const block = el.textContent
-    console.log(block)
-    console.log(number)
+    console.log(`block : ${block}`)
+    console.log(`number : ${number}`)
     switch (player) {
       case 1:
         el.style.backgroundColor = 'blue'
@@ -77,25 +164,35 @@ class World extends React.Component {
   }
 
   render() {
-    const { land } = this.props
+    const { world } = this.props
     const { player } = this.state
     const { number } = this.state
+    console.log(` render player ${player}`)
+    console.log(this.state)
 
     return (
-      <table>
+      <table id="world">
         <tbody>
-          { land.map((row, rowIndex) => (
+          { world.map((row, rowIndex) => (
             <tr
               key={rowIndex}
             >
               { row.map((col, colIndex) => (
                 <td
                   className="borderTab"
-                  key={`${rowIndex}/${colIndex}`}
-                  id={`${rowIndex}/${colIndex}`}
-                  onClick={event => this.handleClick(event, player, number)}
+                  key={`${rowIndex}_${colIndex}`}
                 >
-                  { col }
+                  <div
+                    type="button"
+                    id={`I${rowIndex}_${colIndex}`}
+                    onClick={(event) => {
+                      console.log(` click player ${player}`)
+                      this.handleClick(event, player, number)
+                    }
+                    }
+                  >
+                    { col }
+                  </div>
                 </td>
               ))}
             </tr>
@@ -106,11 +203,5 @@ class World extends React.Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
-    world: state.world
-  }
-}
-
-export default connect(mapStateToProps)(World)
+export default connect(state => state)(World)
 

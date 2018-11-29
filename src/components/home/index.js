@@ -13,7 +13,7 @@ class Home extends Component {
     return (
       <div>
         <div className="leftLayout">
-          <World land={world} player={player} number={number} />
+          <World world={world} player={player} number={number} />
         </div>
         <div className="rightLayout">
           <RightLayout />
