@@ -3,19 +3,19 @@ import { fromJS } from 'immutable'
 import initialState from './initial-state'
 import actionsType from '../actions/actions-type'
 
-const getMap = (state, action) => (
+const updatePlayer = (state, action) => (
   fromJS(state)
-    .setIn(['World'], action.data)
+    .setIn(['player'], action.player)
     .toJS()
 )
 
-const world = (state = initialState, action) => {
+const home = (state = initialState, action) => {
   switch (action.type) {
-    case actionsType.GET_LAST_EVENTS:
-      return getMap(state, action)
+    case actionsType.NEXT_PLAYER:
+      return updatePlayer(state, action)
     default:
       return state
   }
 }
 
-export default world
+export default home

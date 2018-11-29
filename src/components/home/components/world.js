@@ -1,6 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
+import { nextPlayer } from '../actions'
+
 class World extends React.Component {
   constructor(props) {
     super(props)
@@ -8,6 +10,7 @@ class World extends React.Component {
       player: props.player,
       number: props.number
     }
+    this.handleClick = this.handleClick.bind(this)
   }
 
   componentDidMount() {
@@ -19,6 +22,7 @@ class World extends React.Component {
     const { world } = this.props
     let el
     let colorBlock
+    console.log(player)
 
     switch (player) {
       case 1:
@@ -50,9 +54,9 @@ class World extends React.Component {
         }
       })
     })
-    console.log(`el.textContent : ${el.textContent}`)
-    console.log(`player : ${player}`)
-    console.log(`colorBlock : ${colorBlock}`)
+    // console.log(`el.textContent : ${el.textContent}`)
+    // console.log(`player : ${player}`)
+    // console.log(`colorBlock : ${colorBlock}`)
   }
 
   friendlyNeighbor(x, y, color) {
@@ -77,20 +81,20 @@ class World extends React.Component {
     return false
   }
 
-  nextPlayer(p) {
-    let player = p
-    if (player >= 4) {
-      player = 1
+  /* nextPlayer(player) {
+    let p = player
+    if (p >= 4) {
+      p = 1
     } else {
-      player += 1
+      p += 1
     }
-    this.blockPlayable(player)
+    this.blockPlayable(p)
 
-    this.state.player = player
+    // this.state.player = p
     this.setState({
-      player: player * 1
+      player: p * 1
     })
-  }
+  } */
 
   initBlock() {
     const { world } = this.props
@@ -134,11 +138,11 @@ class World extends React.Component {
     })
   }
 
-  handleClick(event, player, number) {
+  handleClick(event, number) {
     const el = event.target
-    const block = el.textContent
-    console.log(`block : ${block}`)
+    const { player } = this.props
     console.log(`number : ${number}`)
+
     switch (player) {
       case 1:
         el.style.backgroundColor = 'blue'
@@ -160,23 +164,21 @@ class World extends React.Component {
         el.style.backgroundColor = 'white'
     }
 
-    this.nextPlayer(player)
+    nextPlayer(player)
+    this.setState({
+      player: { player }
+    })
+    this.blockPlayable(player)
   }
 
   render() {
-    const { world } = this.props
-    const { player } = this.state
-    const { number } = this.state
-    console.log(` render player ${player}`)
-    console.log(this.state)
+    const { world, player, number } = this.props
 
     return (
       <table id="world">
         <tbody>
           { world.map((row, rowIndex) => (
-            <tr
-              key={rowIndex}
-            >
+            <tr key={rowIndex}>
               { row.map((col, colIndex) => (
                 <td
                   className="borderTab"
@@ -186,7 +188,6 @@ class World extends React.Component {
                     type="button"
                     id={`I${rowIndex}_${colIndex}`}
                     onClick={(event) => {
-                      console.log(` click player ${player}`)
                       this.handleClick(event, player, number)
                     }
                     }
@@ -204,4 +205,3 @@ class World extends React.Component {
 }
 
 export default connect(state => state)(World)
-

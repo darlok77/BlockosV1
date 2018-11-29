@@ -1,3 +1,3 @@
 export default {
-  INIT_BLOCK: 'INIT_BLOCK'
+  NEXT_PLAYER: 'NEXT_PLAYER'
 }

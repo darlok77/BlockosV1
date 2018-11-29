@@ -1,18 +1,18 @@
 import actionsType from './actions-type'
 import store from '../../../store'
 
-const getMap = events => ({
-  type: actionsType.GET_Map,
-  data: events
+const updatePlayer = player => ({
+  type: actionsType.NEXT_PLAYER,
+  player: player * 1
 })
 
-export const getEventsMap1 = () => {
-  const map1 = [
-    [1, 1, 1, 0],
-    [0, 0, 0, 0],
-    [0, 1, 1, 0],
-    [0, 0, 0, 1]
-  ]
+export const nextPlayer = (player) => {
+  let p = player
 
-  store.dispatch(getMap(map1))
+  if (p >= 4) {
+    p = 1
+  } else {
+    p += 1
+  }
+  store.dispatch(updatePlayer(p))
 }
