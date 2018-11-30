@@ -22,7 +22,7 @@ class World extends React.Component {
     const { world } = this.props
     let el
     let colorBlock
-    console.log(player)
+    console.log(`player dans blockplayable : ${player}`)
 
     switch (player) {
       case 1:
@@ -168,6 +168,7 @@ class World extends React.Component {
     this.setState({
       player: { player }
     })
+    console.log(`player aprés update : ${player}`)
     this.blockPlayable(player)
   }
 
