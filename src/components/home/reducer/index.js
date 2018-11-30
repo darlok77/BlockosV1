@@ -9,10 +9,26 @@ const updatePlayer = (state, action) => (
     .toJS()
 )
 
+/* const updateWorld = (state, action) => (
+  fromJS(state)
+    .setIn(['world'], action.world)
+    .toArray()
+) */
+
+const updateNumber = (state, action) => (
+  fromJS(state)
+    .setIn(['number'], action.number)
+    .toJS()
+)
+
 const home = (state = initialState, action) => {
   switch (action.type) {
     case actionsType.NEXT_PLAYER:
       return updatePlayer(state, action)
+    /* case actionsType.UPDATE_WORLD:
+      return updateWorld(state, action) */
+    case actionsType.NEXT_NUMBER:
+      return updateNumber(state, action)
     default:
       return state
   }

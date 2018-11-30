@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { nextPlayer } from '../actions'
+import { nextPlayer, nextWorld } from '../actions'
 
 class World extends React.Component {
   constructor(props) {
@@ -22,7 +22,8 @@ class World extends React.Component {
     const { world } = this.props
     let el
     let colorBlock
-    console.log(`player dans blockplayable : ${player}`)
+    console.log('player dans blockplayable : ')
+    console.log(player)
 
     switch (player) {
       case 1:
@@ -47,7 +48,7 @@ class World extends React.Component {
 
         if (el.textContent === player.toString()) {
           // el.style.pointerEvents = 'none'
-          el.style.backgroundColor = 'blue'
+          // el.style.backgroundColor = 'blue'
         } else if (!this.friendlyNeighbor(rowIndex, colIndex, colorBlock)) {
           el.style.pointerEvents = 'none'
           el.style.backgroundColor = 'silver'
@@ -140,9 +141,10 @@ class World extends React.Component {
 
   handleClick(event, number) {
     const el = event.target
-    const { player } = this.props
+    const { player, world } = this.props
+    console.log(world)
     console.log(`number : ${number}`)
-
+    nextWorld(el.id, world, player)
     switch (player) {
       case 1:
         el.style.backgroundColor = 'blue'
@@ -163,17 +165,22 @@ class World extends React.Component {
       default:
         el.style.backgroundColor = 'white'
     }
-
+    // console.log(`player avant update : ${player}`)
     nextPlayer(player)
-    this.setState({
+    // console.log('state.player aprés next : ')
+    // console.log({ player })
+    // console.log(this.props)
+    /* this.setState({
       player: { player }
-    })
+    }) */
     console.log(`player aprés update : ${player}`)
     this.blockPlayable(player)
   }
 
   render() {
     const { world, player, number } = this.props
+    console.log(typeof world)
+    console.log(world)
 
     return (
       <table id="world">
