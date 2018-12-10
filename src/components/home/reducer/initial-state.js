@@ -27,5 +27,9 @@ export default {
     ['W', 'W', 'W', 'W', 'W', 'W', 0, 0, 0, 0, 0, 0, 'T4', 0, 0, 0, 0, 0, 0, 'W', 'W', 'W', 'W', 'W', 'W']
   ],
   player: 1,
-  number: {}
+  number: {},
+  turn: {
+    nbTurn: 1,
+    type: 'init'
+  } 
 }

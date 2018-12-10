@@ -21,14 +21,22 @@ const updateNumber = (state, action) => (
     .toJS()
 )
 
+const updateTurn = (state, action) => (
+  fromJS(state)
+    .setIn(['turn'], action.turn)
+    .toJS()
+)
+
 const home = (state = initialState, action) => {
   switch (action.type) {
     case actionsType.NEXT_PLAYER:
       return updatePlayer(state, action)
     /* case actionsType.UPDATE_WORLD:
       return updateWorld(state, action) */
-    case actionsType.NEXT_NUMBER:
+    case actionsType.NEW_NUMBER:
       return updateNumber(state, action)
+    case actionsType.NEW_TURN:
+      return updateTurn(state, action)
     default:
       return state
   }

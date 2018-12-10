@@ -1,28 +1,48 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { nextPlayer, nextWorld } from '../actions'
+import { nextPlayer, nextWorld, newTurn } from '../actions'
 
 class World extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       player: props.player,
-      number: props.number
+      number: props.number,
+      world: props.world,
+      turn: props.turn,
     }
     this.handleClick = this.handleClick.bind(this)
   }
 
   componentDidMount() {
     this.initBlock()
-    this.blockPlayable(1)
+    this.firstBlockPlayable(1)
   }
 
-  blockPlayable(player) {
+  nextBlockPlayable(number) {
+    console.log(number)
+  }
+
+  blockPlayable(el) {
+    const id = el.id
+    const parseId = id.split('_', 2)
+    const idRow = parseInt(parseId[0].substr(1), 10)
+    const idCol = parseInt(parseId[1], 10)
+
+    if (this.friendlyNeighbor(idRow, idCol, el.style.backgroundColor)) {
+      el.style.pointerEvents = 'auto'
+      el.style.opacity = "1"
+    }
+
+  }
+
+  firstBlockPlayable(player) {
     const { world } = this.props
     let el
     let colorBlock
-    console.log('player dans blockplayable : ')
+    let element
+    console.log('player dans firstBlockPlayable : ')
     console.log(player)
 
     switch (player) {
@@ -47,55 +67,38 @@ class World extends React.Component {
         el = document.querySelector(`#I${rowIndex}_${colIndex}`)
 
         if (el.textContent === player.toString()) {
-          // el.style.pointerEvents = 'none'
-          // el.style.backgroundColor = 'blue'
+          element = el
+          el.style.pointerEvents = 'none'
+          el.style.opacity = "0.33"
         } else if (!this.friendlyNeighbor(rowIndex, colIndex, colorBlock)) {
           el.style.pointerEvents = 'none'
-          el.style.backgroundColor = 'silver'
+          el.style.opacity = "0.33"
         }
       })
     })
-    // console.log(`el.textContent : ${el.textContent}`)
-    // console.log(`player : ${player}`)
-    // console.log(`colorBlock : ${colorBlock}`)
+    return element
   }
 
   friendlyNeighbor(x, y, color) {
-    // const elPrincipal = document.querySelector(`#I${x}_${y}`)
     const elLeft = document.querySelector(`#I${x}_${y - 1}`)
     const elRight = document.querySelector(`#I${x}_${y + 1}`)
     const elTop = document.querySelector(`#I${x - 1}_${y}`)
     const elBottom = document.querySelector(`#I${x + 1}_${y}`)
 
-    if (elLeft !== null && elLeft.style.backgroundColor === color) {
+    if (elLeft !== null && (elLeft.style.backgroundColor === color || elLeft.style.backgroundColor === 'gray')) {
       return true
     }
-    if (elRight !== null && elRight.style.backgroundColor === color) {
+    if (elRight !== null && (elRight.style.backgroundColor === color || elRight.style.backgroundColor === 'gray')) {
       return true
     }
-    if (elTop !== null && elTop.style.backgroundColor === color) {
+    if (elTop !== null && (elTop.style.backgroundColor === color || elTop.style.backgroundColor === 'gray')) {
       return true
     }
-    if (elBottom !== null && elBottom.style.backgroundColor === color) {
+    if (elBottom !== null && (elBottom.style.backgroundColor === color || elBottom.style.backgroundColor === 'gray')) {
       return true
     }
     return false
   }
-
-  /* nextPlayer(player) {
-    let p = player
-    if (p >= 4) {
-      p = 1
-    } else {
-      p += 1
-    }
-    this.blockPlayable(p)
-
-    // this.state.player = p
-    this.setState({
-      player: p * 1
-    })
-  } */
 
   initBlock() {
     const { world } = this.props
@@ -115,10 +118,10 @@ class World extends React.Component {
             el.style.backgroundColor = 'lime'
             break
           case 'T':
-            el.style.backgroundColor = 'gray'
+            el.style.backgroundColor = 'Purple'
             break
           case 'Z':
-            el.style.backgroundColor = 'purple'
+            el.style.backgroundColor = 'BlueViolet'
             break
           case '1':
             el.style.backgroundColor = 'blue'
@@ -139,11 +142,10 @@ class World extends React.Component {
     })
   }
 
-  handleClick(event, number) {
+  handleClick(event) {
     const el = event.target
-    const { player, world } = this.props
-    console.log(world)
-    console.log(`number : ${number}`)
+    const { player, world, number } = this.props
+    // console.log(world)
     nextWorld(el.id, world, player)
     switch (player) {
       case 1:
@@ -165,7 +167,12 @@ class World extends React.Component {
       default:
         el.style.backgroundColor = 'white'
     }
+    //console.log(number)
+    //newTurn(number)
+
+   
     // console.log(`player avant update : ${player}`)
+
     nextPlayer(player)
     // console.log('state.player aprés next : ')
     // console.log({ player })
@@ -174,13 +181,15 @@ class World extends React.Component {
       player: { player }
     }) */
     console.log(`player aprés update : ${player}`)
-    this.blockPlayable(player)
+    const element = this.firstBlockPlayable(player)
+    // this.continueTurn(element)
+    // this.blockPlayable(element)
   }
 
   render() {
     const { world, player, number } = this.props
-    console.log(typeof world)
-    console.log(world)
+    // console.log(typeof world)
+    // console.log(world)
 
     return (
       <table id="world">
@@ -196,7 +205,7 @@ class World extends React.Component {
                     type="button"
                     id={`I${rowIndex}_${colIndex}`}
                     onClick={(event) => {
-                      this.handleClick(event, player, number)
+                      this.handleClick(event)
                     }
                     }
                   >

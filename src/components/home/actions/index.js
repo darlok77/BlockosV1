@@ -16,6 +16,11 @@ const updateNumber = number => ({
   number: { number }
 })
 
+const updateTurn = turn => ({
+  type: actionsType.NEW_TURN,
+  number: { turn }
+})
+
 export const nextPlayer = (player) => {
   let p = player
 
@@ -37,17 +42,43 @@ export const nextWorld = (id, w, player) => {
   store.dispatch(updateWorld(world))
 }
 
-export const nextNumber = () => {
-  const number1 = Math.floor(Math.random() * (7 - 1) + 1)
-  const number2 = Math.floor(Math.random() * (7 - 1) + 1)
-  const sum = number1 + number2
-  const possibility = {
-    fisrt: [number1, number2]
-  }
+export const newNumber = (number) => {
+  store.dispatch(updateNumber(number))
+}
 
-  if (sum <= 6) {
-    possibility.second = sum
-  }
+export const newTurn = (number) => {
+  const turn={}
+  // ici console.log(number)
 
-  store.dispatch(updateNumber(possibility))
+  switch (number) {
+      case 1:
+        turn.nbTurn = 1
+        turn.type = 'destroy'
+        break
+      case 2:
+        turn.nbTurn = 1
+        turn.type = 'def'
+        break
+      case 3:
+        turn.nbTurn = 2
+        turn.type = 'def'
+        break
+      case 4:
+        turn.nbTurn = 3
+        turn.type = 'def'
+        break
+      case 5:
+        turn.nbTurn = 1
+        turn.type = 'att'
+        break
+      case 6:
+        turn.nbTurn = 2
+        turn.type = 'att'
+        break
+      default:
+        turn.nbTurn = 0
+        turn.type = 'init'
+    }
+
+  store.dispatch(updateTurn(turn.nbTurn - 1))
 }
