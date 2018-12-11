@@ -8,7 +8,12 @@ import RightLayout from './components/rightLayout.js'
 
 class Home extends Component {
   render() {
-    const { world, player, number, turn } = this.props
+    const {
+      world,
+      player,
+      number,
+      turn
+    } = this.props
 
     return (
       <div>
@@ -27,7 +32,7 @@ function mapStateToProps(state) {
     world: state.home.world,
     player: state.home.player,
     number: state.home.number,
-    turn: state.home.turn,
+    turn: state.home.turn
   }
 }
 

@@ -10,7 +10,7 @@ class World extends React.Component {
       player: props.player,
       number: props.number,
       world: props.world,
-      turn: props.turn,
+      turn: props.turn
     }
     this.handleClick = this.handleClick.bind(this)
   }
@@ -25,16 +25,16 @@ class World extends React.Component {
   }
 
   blockPlayable(el) {
-    const id = el.id
-    const parseId = id.split('_', 2)
+    const element = el
+    const elId = element.id
+    const parseId = elId.split('_', 2)
     const idRow = parseInt(parseId[0].substr(1), 10)
     const idCol = parseInt(parseId[1], 10)
 
     if (this.friendlyNeighbor(idRow, idCol, el.style.backgroundColor)) {
-      el.style.pointerEvents = 'auto'
-      el.style.opacity = "1"
+      element.style.pointerEvents = 'auto'
+      element.style.opacity = '1'
     }
-
   }
 
   firstBlockPlayable(player) {
@@ -69,10 +69,10 @@ class World extends React.Component {
         if (el.textContent === player.toString()) {
           element = el
           el.style.pointerEvents = 'none'
-          el.style.opacity = "0.33"
+          el.style.opacity = '0.33'
         } else if (!this.friendlyNeighbor(rowIndex, colIndex, colorBlock)) {
           el.style.pointerEvents = 'none'
-          el.style.opacity = "0.33"
+          el.style.opacity = '0.33'
         }
       })
     })
@@ -144,8 +144,15 @@ class World extends React.Component {
 
   handleClick(event) {
     const el = event.target
-    const { player, world, number } = this.props
+    const {
+      player,
+      world,
+      number,
+      turn
+    } = this.props
+
     // console.log(world)
+
     nextWorld(el.id, world, player)
     switch (player) {
       case 1:
@@ -167,27 +174,31 @@ class World extends React.Component {
       default:
         el.style.backgroundColor = 'white'
     }
-    //console.log(number)
-    //newTurn(number)
+    newTurn(number)
+    this.setState({
+      turn: { turn }
+    })
+    // console.log(turn)
+    // ICI state turn non actualisé
 
-   
     // console.log(`player avant update : ${player}`)
 
     nextPlayer(player)
     // console.log('state.player aprés next : ')
     // console.log({ player })
     // console.log(this.props)
-    /* this.setState({
+    this.setState({
       player: { player }
-    }) */
+    })
+    // ICI state player non actualisé
     console.log(`player aprés update : ${player}`)
-    const element = this.firstBlockPlayable(player)
+    /* const element = */ this.firstBlockPlayable(player)
     // this.continueTurn(element)
     // this.blockPlayable(element)
   }
 
   render() {
-    const { world, player, number } = this.props
+    const { world } = this.props
     // console.log(typeof world)
     // console.log(world)
 

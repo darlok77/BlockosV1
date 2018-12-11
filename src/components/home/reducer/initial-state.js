@@ -31,5 +31,5 @@ export default {
   turn: {
     nbTurn: 1,
     type: 'init'
-  } 
+  }
 }

@@ -18,7 +18,7 @@ const updateNumber = number => ({
 
 const updateTurn = turn => ({
   type: actionsType.NEW_TURN,
-  number: { turn }
+  turn: { turn }
 })
 
 export const nextPlayer = (player) => {
@@ -47,38 +47,40 @@ export const newNumber = (number) => {
 }
 
 export const newTurn = (number) => {
-  const turn={}
-  // ici console.log(number)
+  const turn = {}
 
-  switch (number) {
-      case 1:
-        turn.nbTurn = 1
-        turn.type = 'destroy'
-        break
-      case 2:
-        turn.nbTurn = 1
-        turn.type = 'def'
-        break
-      case 3:
-        turn.nbTurn = 2
-        turn.type = 'def'
-        break
-      case 4:
-        turn.nbTurn = 3
-        turn.type = 'def'
-        break
-      case 5:
-        turn.nbTurn = 1
-        turn.type = 'att'
-        break
-      case 6:
-        turn.nbTurn = 2
-        turn.type = 'att'
-        break
-      default:
-        turn.nbTurn = 0
-        turn.type = 'init'
-    }
+  switch (number.number) {
+    case 1:
+      turn.nbTurn = 1
+      turn.type = 'destroy'
+      break
+    case 2:
+      turn.nbTurn = 1
+      turn.type = 'def'
+      break
+    case 3:
+      turn.nbTurn = 2
+      turn.type = 'def'
+      break
+    case 4:
+      turn.nbTurn = 3
+      turn.type = 'def'
+      break
+    case 5:
+      console.log('ici')
+      turn.nbTurn = 1
+      turn.type = 'att'
+      break
+    case 6:
+      turn.nbTurn = 2
+      turn.type = 'att'
+      break
+    default:
+      turn.nbTurn = 0
+      turn.type = 'init'
+      console.log('bug')
+  }
+  turn.nbTurn -= 1
 
-  store.dispatch(updateTurn(turn.nbTurn - 1))
+  store.dispatch(updateTurn(turn))
 }
