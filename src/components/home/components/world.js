@@ -13,11 +13,33 @@ class World extends React.Component {
       turn: props.turn
     }
     this.handleClick = this.handleClick.bind(this)
+    this.firstNb = {}
+    this.secondNb = {}
   }
 
   componentDidMount() {
     this.initBlock()
     this.firstBlockPlayable(1)
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    const { open } = this.state
+    // this.setNumber()
+
+    if (nextState.open === true && open === false) {
+      console.log('rhaaaaaaaa')
+    }
+  }
+
+  setNumber() {
+    const { number } = this.props
+    const [first, second] = number.first
+
+    if (number.first === undefined) {
+      this.firstNb = first
+    } else {
+      this.secondNb = second
+    }
   }
 
   nextBlockPlayable(number) {
@@ -59,7 +81,7 @@ class World extends React.Component {
         colorBlock = 'yellow'
         break
       default:
-        colorBlock = 'white'
+        colorBlock = 'AliceBlue'
     }
 
     world.forEach((row, rowIndex) => {
@@ -147,7 +169,6 @@ class World extends React.Component {
     const {
       player,
       world,
-      number,
       turn
     } = this.props
 
@@ -174,7 +195,8 @@ class World extends React.Component {
       default:
         el.style.backgroundColor = 'white'
     }
-    newTurn(number)
+    console.log(this.firstNb)
+    newTurn(this.firstNb)
     this.setState({
       turn: { turn }
     })
@@ -187,6 +209,7 @@ class World extends React.Component {
     // console.log('state.player aprés next : ')
     // console.log({ player })
     // console.log(this.props)
+    // console.log(this.state)
     this.setState({
       player: { player }
     })
@@ -198,10 +221,14 @@ class World extends React.Component {
   }
 
   render() {
-    const { world } = this.props
-    // console.log(typeof world)
+    const { world/* , number, player */ } = this.props
+    console.log(typeof world)
     // console.log(world)
 
+    /* if (number.number !== undefined) {
+      console.log('bla')
+      this.firstBlockPlayable(player)
+    } */
     return (
       <table id="world">
         <tbody>
