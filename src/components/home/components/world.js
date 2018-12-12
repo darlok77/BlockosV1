@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { nextPlayer, nextWorld, newTurn } from '../actions'
+import { nextWorld, newTurn /* nextPlayer */ } from '../actions'
 
 class World extends React.Component {
   constructor(props) {
@@ -33,17 +33,15 @@ class World extends React.Component {
 
   setNumber() {
     const { number } = this.props
-    const [first, second] = number.first
+    if (number.first !== undefined) {
+      const [first, second] = number.first
 
-    if (number.first === undefined) {
-      this.firstNb = first
-    } else {
-      this.secondNb = second
+      if (number.first === undefined) {
+        this.firstNb = first
+      } else {
+        this.secondNb = second
+      }
     }
-  }
-
-  nextBlockPlayable(number) {
-    console.log(number)
   }
 
   blockPlayable(el) {
@@ -52,15 +50,33 @@ class World extends React.Component {
     const parseId = elId.split('_', 2)
     const idRow = parseInt(parseId[0].substr(1), 10)
     const idCol = parseInt(parseId[1], 10)
+    console.log(el)
 
+    if (this.friendlyNeighbor(idRow, idCol - 1, el.style.backgroundColor)) {
+      const elLeft = document.querySelector(`#I${idRow}_${idCol - 1}`)
+      elLeft.style.pointerEvents = 'auto'
+      elLeft.style.opacity = '1'
+    }
     if (this.friendlyNeighbor(idRow, idCol, el.style.backgroundColor)) {
-      element.style.pointerEvents = 'auto'
-      element.style.opacity = '1'
+      const elRight = document.querySelector(`#I${idRow}_${idCol + 1}`)
+      elRight.style.pointerEvents = 'auto'
+      elRight.style.opacity = '1'
+    }
+    if (this.friendlyNeighbor(idRow - 1, idCol, el.style.backgroundColor)) {
+      const elTop = document.querySelector(`#I${idRow - 1}_${idCol}`)
+      elTop.style.pointerEvents = 'auto'
+      elTop.style.opacity = '1'
+    }
+    if (this.friendlyNeighbor(idRow + 1, idCol, el.style.backgroundColor)) {
+      const elBottom = document.querySelector(`#I${idRow + 1}_${idCol}`)
+      elBottom.style.pointerEvents = 'auto'
+      elBottom.style.opacity = '1'
     }
   }
 
   firstBlockPlayable(player) {
-    const { world } = this.props
+    const { world, turn } = this.props
+    console.log(turn.nbTurn)
     let el
     let colorBlock
     let element
@@ -88,6 +104,10 @@ class World extends React.Component {
       row.forEach((col, colIndex) => {
         el = document.querySelector(`#I${rowIndex}_${colIndex}`)
 
+        if (this.friendlyNeighbor(rowIndex, colIndex, colorBlock) && turn.nbTurn !== 0) {
+          el.style.pointerEvents = 'none'
+          el.style.opacity = '0.33'
+        }
         if (el.textContent === player.toString()) {
           element = el
           el.style.pointerEvents = 'none'
@@ -195,6 +215,7 @@ class World extends React.Component {
       default:
         el.style.backgroundColor = 'white'
     }
+    console.log('ici')
     console.log(this.firstNb)
     newTurn(this.firstNb)
     this.setState({
@@ -205,7 +226,7 @@ class World extends React.Component {
 
     // console.log(`player avant update : ${player}`)
 
-    nextPlayer(player)
+    // nextPlayer(player)
     // console.log('state.player aprés next : ')
     // console.log({ player })
     // console.log(this.props)
@@ -215,9 +236,9 @@ class World extends React.Component {
     })
     // ICI state player non actualisé
     console.log(`player aprés update : ${player}`)
-    /* const element = */ this.firstBlockPlayable(player)
+    const element = this.firstBlockPlayable(player)
     // this.continueTurn(element)
-    // this.blockPlayable(element)
+    this.blockPlayable(element)
   }
 
   render() {
