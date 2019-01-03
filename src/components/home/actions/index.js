@@ -43,43 +43,70 @@ export const nextWorld = (id, w, player) => {
 }
 
 export const newNumber = (number) => {
-  store.dispatch(updateNumber(number))
+  const isArray = Array.isArray(number)
+  let first = null
+  let second = null
+  if (isArray) {
+    [first, second] = number
+    console.log('is a array')
+  } else {
+    console.log('is not a array')
+    first = number
+    second = null
+  }
+  const numberUpdate = {
+    firstNb: first,
+    secondNb: second
+  }
+  store.dispatch(updateNumber(numberUpdate))
 }
 
-export const newTurn = (number) => {
-  const turn = {}
-
-  switch (number.number) {
-    case 1:
-      turn.nbTurn = 1
-      turn.type = 'destroy'
-      break
-    case 2:
-      turn.nbTurn = 1
-      turn.type = 'def'
-      break
-    case 3:
-      turn.nbTurn = 2
-      turn.type = 'def'
-      break
-    case 4:
-      turn.nbTurn = 3
-      turn.type = 'def'
-      break
-    case 5:
-      console.log('ici')
-      turn.nbTurn = 1
-      turn.type = 'att'
-      break
-    case 6:
-      turn.nbTurn = 2
-      turn.type = 'att'
-      break
-    default:
-      turn.nbTurn = 0
-      turn.type = 'init'
-      console.log('bug')
+export const newTurn = (number, actualTurn) => {
+  let turn = {}
+  console.log('blooo')
+  console.log(number)
+  console.log(actualTurn.nbTurn)
+  if (actualTurn.nbTurn === 0) {
+    switch (number) {
+      case 1:
+        turn.nbTurn = 1
+        turn.type = 'destroy'
+        console.log('recois 1')
+        break
+      case 2:
+        turn.nbTurn = 1
+        turn.type = 'def'
+        console.log('recois 2')
+        break
+      case 3:
+        turn.nbTurn = 2
+        turn.type = 'def'
+        console.log('recois 3')
+        break
+      case 4:
+        turn.nbTurn = 3
+        turn.type = 'def'
+        console.log('recois 4')
+        break
+      case 5:
+        turn.nbTurn = 1
+        turn.type = 'att'
+        console.log('recois 5')
+        break
+      case 6:
+        turn.nbTurn = 2
+        turn.type = 'att'
+        console.log('recois 6')
+        break
+      default:
+        turn.nbTurn = 0
+        turn.type = 'init'
+        console.log('bug')
+    }
+  } else {
+    turn = actualTurn
   }
+
   turn.nbTurn -= 1
 
   store.dispatch(updateTurn(turn))

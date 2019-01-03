@@ -1,7 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { nextWorld, newTurn /* nextPlayer */ } from '../actions'
+import {
+  nextWorld,
+  newTurn,
+  nextPlayer,
+  newNumber
+} from '../actions'
 
 class World extends React.Component {
   constructor(props) {
@@ -13,35 +18,11 @@ class World extends React.Component {
       turn: props.turn
     }
     this.handleClick = this.handleClick.bind(this)
-    this.firstNb = {}
-    this.secondNb = {}
   }
 
   componentDidMount() {
     this.initBlock()
-    this.firstBlockPlayable(1)
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    const { open } = this.state
-    // this.setNumber()
-
-    if (nextState.open === true && open === false) {
-      console.log('rhaaaaaaaa')
-    }
-  }
-
-  setNumber() {
-    const { number } = this.props
-    if (number.first !== undefined) {
-      const [first, second] = number.first
-
-      if (number.first === undefined) {
-        this.firstNb = first
-      } else {
-        this.secondNb = second
-      }
-    }
+    this.firstBlockPlayable(1) // component will update si il y a un number mettre celu la a 0
   }
 
   blockPlayable(el) {
@@ -76,7 +57,6 @@ class World extends React.Component {
 
   firstBlockPlayable(player) {
     const { world, turn } = this.props
-    console.log(turn.nbTurn)
     let el
     let colorBlock
     let element
@@ -99,12 +79,15 @@ class World extends React.Component {
       default:
         colorBlock = 'AliceBlue'
     }
-
+    console.log('turn =')
+    console.log(turn.turn.nbTurn)
     world.forEach((row, rowIndex) => {
       row.forEach((col, colIndex) => {
         el = document.querySelector(`#I${rowIndex}_${colIndex}`)
+        el.style.pointerEvents = 'auto'
+        el.style.opacity = '1'
 
-        if (this.friendlyNeighbor(rowIndex, colIndex, colorBlock) && turn.nbTurn !== 0) {
+        if (this.friendlyNeighbor(rowIndex, colIndex, colorBlock) && turn.turn.nbTurn !== 0) {
           el.style.pointerEvents = 'none'
           el.style.opacity = '0.33'
         }
@@ -184,16 +167,17 @@ class World extends React.Component {
     })
   }
 
-  handleClick(event) {
+  async handleClick(event) {
     const el = event.target
+    const { home } = this.props
     const {
+      number,
       player,
       world,
       turn
-    } = this.props
-
+    } = home
     // console.log(world)
-
+    // ici appel mais sert a rien
     nextWorld(el.id, world, player)
     switch (player) {
       case 1:
@@ -215,35 +199,38 @@ class World extends React.Component {
       default:
         el.style.backgroundColor = 'white'
     }
-    console.log('ici')
-    console.log(this.firstNb)
-    newTurn(this.firstNb)
+    await newTurn(number.number.firstNb, turn.turn)
+    const okT = this.props
+    const tmpTurn = okT.turn
     this.setState({
-      turn: { turn }
+      turn: tmpTurn
     })
-    // console.log(turn)
-    // ICI state turn non actualisé
+    if (tmpTurn.turn.nbTurn === 0) {
+      console.log('next player')
+      newNumber(undefined)
+      // ici variable tmp remplacer par la sate directement
 
-    // console.log(`player avant update : ${player}`)
+      await nextPlayer(player)
+      const okP = this.props
+      const tmpPlayer = okP.player
+      // console.log(tmpPlayer)
 
-    // nextPlayer(player)
-    // console.log('state.player aprés next : ')
-    // console.log({ player })
-    // console.log(this.props)
-    // console.log(this.state)
-    this.setState({
-      player: { player }
-    })
-    // ICI state player non actualisé
-    console.log(`player aprés update : ${player}`)
-    const element = this.firstBlockPlayable(player)
-    // this.continueTurn(element)
-    this.blockPlayable(element)
+      this.setState({
+        player: tmpPlayer
+      })
+      const element = this.firstBlockPlayable(tmpPlayer)
+      console.log(element)
+    } else {
+      console.log('next turn')
+      this.firstBlockPlayable(player)
+      // this.continueTurn(element)
+      this.blockPlayable(el)
+    }
   }
 
   render() {
     const { world/* , number, player */ } = this.props
-    console.log(typeof world)
+    // console.log(typeof world)
     // console.log(world)
 
     /* if (number.number !== undefined) {
