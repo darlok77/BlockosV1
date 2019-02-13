@@ -29,9 +29,7 @@ export default {
   player: 1,
   number: {},
   turn: {
-    turn: {
-      nbTurn: 0,
-      type: 'init'
-    }
+    nbTurn: 0,
+    type: 'init'
   }
 }

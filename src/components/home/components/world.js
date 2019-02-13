@@ -2,10 +2,12 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import {
-  nextWorld,
+  /* nextWorld, */
   newTurn,
   nextPlayer,
-  newNumber
+  newNumber,
+  updatePlayer,
+  updateTurn
 } from '../actions'
 
 class World extends React.Component {
@@ -15,7 +17,8 @@ class World extends React.Component {
       player: props.player,
       number: props.number,
       world: props.world,
-      turn: props.turn
+      turn: props.turn,
+      firstEnd: false
     }
     this.handleClick = this.handleClick.bind(this)
   }
@@ -25,14 +28,46 @@ class World extends React.Component {
     this.firstBlockPlayable(1) // component will update si il y a un number mettre celu la a 0
   }
 
+  setBlock(el, player) {
+    const element = el
+    switch (player) {
+      case 1:
+        element.style.backgroundColor = 'blue'
+        element.textContent = 1
+        break
+      case 2:
+        element.style.backgroundColor = 'red'
+        element.textContent = 2
+        break
+      case 3:
+        element.style.backgroundColor = 'green'
+        element.textContent = 3
+        break
+      case 4:
+        element.style.backgroundColor = 'yellow'
+        element.textContent = 4
+        break
+      default:
+        element.style.backgroundColor = 'white'
+    }
+  }
+
   blockPlayable(el) {
+    const { world } = this.props
     const element = el
     const elId = element.id
     const parseId = elId.split('_', 2)
     const idRow = parseInt(parseId[0].substr(1), 10)
     const idCol = parseInt(parseId[1], 10)
-    console.log(el)
+    let elem = ''
 
+    world.forEach((row, rowIndex) => {
+      row.forEach((col, colIndex) => {
+        elem = document.querySelector(`#I${rowIndex}_${colIndex}`)
+        elem.style.pointerEvents = 'none'
+        elem.style.opacity = '0.33'
+      })
+    })
     if (this.friendlyNeighbor(idRow, idCol - 1, el.style.backgroundColor)) {
       const elLeft = document.querySelector(`#I${idRow}_${idCol - 1}`)
       elLeft.style.pointerEvents = 'auto'
@@ -60,8 +95,6 @@ class World extends React.Component {
     let el
     let colorBlock
     let element
-    console.log('player dans firstBlockPlayable : ')
-    console.log(player)
 
     switch (player) {
       case 1:
@@ -79,15 +112,17 @@ class World extends React.Component {
       default:
         colorBlock = 'AliceBlue'
     }
-    console.log('turn =')
-    console.log(turn.turn.nbTurn)
+
+    console.log(`turn = ${turn.nbTurn}`) // ICI turn reste a 0 consequence if apres
+    console.log(`player = ${player}`)
+
     world.forEach((row, rowIndex) => {
       row.forEach((col, colIndex) => {
         el = document.querySelector(`#I${rowIndex}_${colIndex}`)
         el.style.pointerEvents = 'auto'
         el.style.opacity = '1'
 
-        if (this.friendlyNeighbor(rowIndex, colIndex, colorBlock) && turn.turn.nbTurn !== 0) {
+        if (this.friendlyNeighbor(rowIndex, colIndex, colorBlock) && turn.nbTurn !== 0) {
           el.style.pointerEvents = 'none'
           el.style.opacity = '0.33'
         }
@@ -169,74 +204,79 @@ class World extends React.Component {
 
   async handleClick(event) {
     const el = event.target
-    const { home } = this.props
+    const { dispatch, home } = this.props
     const {
       number,
       player,
-      world,
       turn
     } = home
+    const { firstEnd } = this.state
+    let playerUpdated = player
+    let turnUpdated = turn
     // console.log(world)
     // ici appel mais sert a rien
-    nextWorld(el.id, world, player)
-    switch (player) {
-      case 1:
-        el.style.backgroundColor = 'blue'
-        el.textContent = 1
-        break
-      case 2:
-        el.style.backgroundColor = 'red'
-        el.textContent = 2
-        break
-      case 3:
-        el.style.backgroundColor = 'green'
-        el.textContent = 3
-        break
-      case 4:
-        el.style.backgroundColor = 'yellow'
-        el.textContent = 4
-        break
-      default:
-        el.style.backgroundColor = 'white'
-    }
-    await newTurn(number.number.firstNb, turn.turn)
-    const okT = this.props
-    const tmpTurn = okT.turn
-    this.setState({
-      turn: tmpTurn
-    })
-    if (tmpTurn.turn.nbTurn === 0) {
-      console.log('next player')
-      newNumber(undefined)
-      // ici variable tmp remplacer par la sate directement
+    // nextWorld(el.id, world, player)
+    this.setBlock(el, player)
 
-      await nextPlayer(player)
-      const okP = this.props
-      const tmpPlayer = okP.player
-      // console.log(tmpPlayer)
-
-      this.setState({
-        player: tmpPlayer
-      })
-      const element = this.firstBlockPlayable(tmpPlayer)
-      console.log(element)
+    // NEW TURN
+    if (!firstEnd || number.number.secondNb === null) {
+      turnUpdated = newTurn(number.number.firstNb, turn)
+      dispatch(updateTurn(turnUpdated))
+      console.log('turnUpdated first')
+      console.log(turnUpdated)
     } else {
+      turnUpdated = newTurn(number.number.secondNb, turn)
+      dispatch(updateTurn(turnUpdated))
+      console.log('turnUpdated second')
+      console.log(turnUpdated)
+    }
+
+    if (turnUpdated.nbTurn === 0) { // TURN END
+      await console.log(firstEnd)
+      console.log(number)
+      if (await firstEnd) { // nombre 1 fini
+        console.log('1 fini')
+        if (number.number.secondNb === null) { // second Number null
+          console.log('2 null')
+          this.setState({
+            firstEnd: false
+          })
+          console.log('next player')
+          newNumber(undefined)
+
+          playerUpdated = nextPlayer(player)
+          dispatch(updatePlayer(playerUpdated))
+          this.firstBlockPlayable(playerUpdated)
+          await console.log('firstEnd false')
+          await console.log(firstEnd)
+        } else { // second number exist
+          console.log('2 exist')
+          this.setState({
+            firstEnd: true
+          })
+          await console.log('firstEnd true1')
+          await console.log(firstEnd)
+        }
+      } else { // nombre 1 pas fini
+        console.log('1 pas fini')
+        this.setState({
+          firstEnd: true
+        })
+        await console.log('firstEnd true2')
+        await console.log(firstEnd)
+      }
+    } else { // NEXT TURN
       console.log('next turn')
-      this.firstBlockPlayable(player)
+      console.log(number)
+      // this.firstBlockPlayable(player)
       // this.continueTurn(element)
       this.blockPlayable(el)
     }
   }
 
   render() {
-    const { world/* , number, player */ } = this.props
-    // console.log(typeof world)
-    // console.log(world)
+    const { world } = this.props
 
-    /* if (number.number !== undefined) {
-      console.log('bla')
-      this.firstBlockPlayable(player)
-    } */
     return (
       <table id="world">
         <tbody>

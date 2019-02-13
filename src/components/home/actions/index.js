@@ -1,14 +1,15 @@
 import actionsType from './actions-type'
 import store from '../../../store'
 
-const updatePlayer = player => ({
+// ici changer, retirer :{var}
+export const updatePlayer = player => ({
   type: actionsType.NEXT_PLAYER,
   player: player * 1
 })
 
 const updateWorld = world => ({
   type: actionsType.UPDATE_WORLD,
-  world: { world }
+  world
 })
 
 const updateNumber = number => ({
@@ -16,20 +17,23 @@ const updateNumber = number => ({
   number: { number }
 })
 
-const updateTurn = turn => ({
+export const updateTurn = turn => ({
   type: actionsType.NEW_TURN,
-  turn: { turn }
+  turn
 })
 
 export const nextPlayer = (player) => {
   let p = player
 
-  if (p >= 4) {
-    p = 1
-  } else {
+  if (p < 5) {
     p += 1
+
+    return p
   }
-  store.dispatch(updatePlayer(p))
+
+  p = 1
+
+  return p
 }
 
 export const nextWorld = (id, w, player) => {
@@ -109,5 +113,5 @@ export const newTurn = (number, actualTurn) => {
 
   turn.nbTurn -= 1
 
-  store.dispatch(updateTurn(turn))
+  return turn
 }

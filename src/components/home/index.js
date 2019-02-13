@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-// import { nextPlayer } from './actions'
-
 import World from './components/world.js'
 import RightLayout from './components/rightLayout.js'
 
