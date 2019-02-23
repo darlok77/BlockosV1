@@ -14,10 +14,8 @@ class World extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      player: props.player,
-      number: props.number,
       world: props.world,
-      turn: props.turn,
+      turnState: { nbTurn: 0 },
       firstEnd: false
     }
     this.handleClick = this.handleClick.bind(this)
@@ -92,6 +90,7 @@ class World extends React.Component {
 
   firstBlockPlayable(player) {
     const { world, turn } = this.props
+    console.log(this.props)
     let el
     let colorBlock
     let element
@@ -145,16 +144,16 @@ class World extends React.Component {
     const elTop = document.querySelector(`#I${x - 1}_${y}`)
     const elBottom = document.querySelector(`#I${x + 1}_${y}`)
 
-    if (elLeft !== null && (elLeft.style.backgroundColor === color || elLeft.style.backgroundColor === 'gray')) {
+    if (elLeft !== null && (elLeft.style.backgroundColor === color)) {
       return true
     }
-    if (elRight !== null && (elRight.style.backgroundColor === color || elRight.style.backgroundColor === 'gray')) {
+    if (elRight !== null && (elRight.style.backgroundColor === color)) {
       return true
     }
-    if (elTop !== null && (elTop.style.backgroundColor === color || elTop.style.backgroundColor === 'gray')) {
+    if (elTop !== null && (elTop.style.backgroundColor === color)) {
       return true
     }
-    if (elBottom !== null && (elBottom.style.backgroundColor === color || elBottom.style.backgroundColor === 'gray')) {
+    if (elBottom !== null && (elBottom.style.backgroundColor === color)) {
       return true
     }
     return false
@@ -202,7 +201,7 @@ class World extends React.Component {
     })
   }
 
-  async handleClick(event) {
+  handleClick(event) {
     const el = event.target
     const { dispatch, home } = this.props
     const {
@@ -210,15 +209,78 @@ class World extends React.Component {
       player,
       turn
     } = home
-    const { firstEnd } = this.state
+    const { firstEnd, turnState } = this.state
+    let currentNbTurn = turnState
+    let isEnded = firstEnd
     let playerUpdated = player
     let turnUpdated = turn
     // console.log(world)
     // ici appel mais sert a rien
     // nextWorld(el.id, world, player)
     this.setBlock(el, player)
+    console.log(currentNbTurn)
 
-    // NEW TURN
+    if (!isEnded) {
+      console.log('firstEnd false')
+      if (currentNbTurn.nbTurn === 0) {
+        console.log('nbTurn = 0')
+        if (number.number.secondNb === null) {
+          console.log('second = null')
+          isEnded = false
+          this.setState({
+            firstEnd: isEnded
+          })
+          console.log('next player')
+          newNumber(undefined)
+          playerUpdated = nextPlayer(player)
+          dispatch(updatePlayer(playerUpdated))
+          this.firstBlockPlayable(playerUpdated)
+        } else {
+          console.log('second exist')
+          isEnded = true
+          this.setState({
+            firstEnd: isEnded
+          })
+        }
+      } else {
+        console.log('nbTurn != 0')
+        turnUpdated = newTurn(number.number.firstNb, turn)
+        dispatch(updateTurn(turnUpdated))
+        console.log('turnUpdated first')
+        console.log(turnUpdated)
+        currentNbTurn = turnUpdated
+        this.setState({
+          turnState: currentNbTurn
+        })
+        this.blockPlayable(el)
+      }
+    } else {
+      console.log('firstEnd true')
+      if (currentNbTurn.nbTurn === 0) {
+        console.log('nbTurn === 0')
+        isEnded = false
+        this.setState({
+          firstEnd: isEnded
+        })
+        console.log('next player')
+        newNumber(undefined)
+        playerUpdated = nextPlayer(player)
+        dispatch(updatePlayer(playerUpdated))
+        this.firstBlockPlayable(playerUpdated)
+      } else {
+        console.log('nbTurn =! 0')
+        turnUpdated = newTurn(number.number.secondNb, turn)
+        dispatch(updateTurn(turnUpdated))
+        console.log('turnUpdated second')
+        console.log(turnUpdated)
+        currentNbTurn = turnUpdated
+        this.setState({
+          turnState: currentNbTurn
+        })
+      }
+    }
+
+    /* // NEW TURN
     if (!firstEnd || number.number.secondNb === null) {
       turnUpdated = newTurn(number.number.firstNb, turn)
       dispatch(updateTurn(turnUpdated))
@@ -259,11 +321,12 @@ class World extends React.Component {
         }
       } else { // nombre 1 pas fini
         console.log('1 pas fini')
+        isEnded = true
         this.setState({
-          firstEnd: true
+          firstEnd: isEnded
         })
         await console.log('firstEnd true2')
-        await console.log(firstEnd)
+        await console.log(isEnded)
       }
     } else { // NEXT TURN
       console.log('next turn')
@@ -271,7 +334,7 @@ class World extends React.Component {
       // this.firstBlockPlayable(player)
       // this.continueTurn(element)
       this.blockPlayable(el)
-    }
+    } */
   }
 
   render() {
