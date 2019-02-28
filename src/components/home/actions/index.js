@@ -4,7 +4,7 @@ import store from '../../../store'
 // ici changer, retirer :{var}
 export const updatePlayer = player => ({
   type: actionsType.NEXT_PLAYER,
-  player: player * 1
+  player
 })
 
 const updateWorld = world => ({
@@ -14,7 +14,7 @@ const updateWorld = world => ({
 
 const updateNumber = number => ({
   type: actionsType.NEW_NUMBER,
-  number: { number }
+  number
 })
 
 export const updateTurn = turn => ({
@@ -67,7 +67,6 @@ export const newNumber = (number) => {
 
 export const newTurn = (number, actualTurn) => {
   let turn = {}
-  console.log('blooo')
   console.log(number)
   console.log(actualTurn.nbTurn)
   if (actualTurn.nbTurn === 0) {
@@ -110,8 +109,5 @@ export const newTurn = (number, actualTurn) => {
   } else {
     turn = actualTurn
   }
-
-  turn.nbTurn -= 1
-
   return turn
 }

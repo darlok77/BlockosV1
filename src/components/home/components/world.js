@@ -15,7 +15,7 @@ class World extends React.Component {
     super(props)
     this.state = {
       world: props.world,
-      turnState: { nbTurn: 0 },
+      turnState: props.turn,
       firstEnd: false
     }
     this.handleClick = this.handleClick.bind(this)
@@ -24,6 +24,23 @@ class World extends React.Component {
   componentDidMount() {
     this.initBlock()
     this.firstBlockPlayable(1) // component will update si il y a un number mettre celu la a 0
+  }
+
+  componentWillUpdate(nextProps) {
+    const { number } = this.props
+    console.log(number)
+    // console.log(nextProps.home.turn)
+    console.log(nextProps.home.number)
+    if (number !== nextProps.home.number) {
+      console.log('iciii')
+      /* this.setState({
+        turnState: nextProps.turnState
+      }) */
+      /* this.state = {
+        turnState: nextProps.home.turn
+      } */
+      // console.log(this.props)
+    }
   }
 
   setBlock(el, player) {
@@ -51,7 +68,7 @@ class World extends React.Component {
   }
 
   blockPlayable(el) {
-    const { world } = this.props
+    const { world } = this.props // ICI props vienne pas de home ?
     const element = el
     const elId = element.id
     const parseId = elId.split('_', 2)
@@ -89,7 +106,7 @@ class World extends React.Component {
   }
 
   firstBlockPlayable(player) {
-    const { world, turn } = this.props
+    const { world, turn } = this.props // ICI props vienne pas de home ?
     console.log(this.props)
     let el
     let colorBlock
@@ -160,7 +177,7 @@ class World extends React.Component {
   }
 
   initBlock() {
-    const { world } = this.props
+    const { world } = this.props // ICI props vienne pas de home ?
     let el
 
     world.forEach((row, rowIndex) => {
@@ -210,6 +227,7 @@ class World extends React.Component {
       turn
     } = home
     const { firstEnd, turnState } = this.state
+    console.log(this.state)
     let currentNbTurn = turnState
     let isEnded = firstEnd
     let playerUpdated = player
@@ -222,9 +240,10 @@ class World extends React.Component {
 
     if (!isEnded) {
       console.log('firstEnd false')
-      if (currentNbTurn.nbTurn === 0) {
+      // ICI prio 2eme joueur jou sur plusieur tour , turn = 0
+      if (currentNbTurn.nbTurn === 0 && turn.type !== 'init') {
         console.log('nbTurn = 0')
-        if (number.number.secondNb === null) {
+        if (number.secondNb === null) {
           console.log('second = null')
           isEnded = false
           this.setState({
@@ -235,6 +254,10 @@ class World extends React.Component {
           playerUpdated = nextPlayer(player)
           dispatch(updatePlayer(playerUpdated))
           this.firstBlockPlayable(playerUpdated)
+          currentNbTurn.type = 'init'
+          this.setState({
+            turnState: currentNbTurn
+          })
         } else {
           console.log('second exist')
           isEnded = true
@@ -244,7 +267,8 @@ class World extends React.Component {
         }
       } else {
         console.log('nbTurn != 0')
-        turnUpdated = newTurn(number.number.firstNb, turn)
+        turnUpdated = newTurn(number.firstNb, turn)
+        turnUpdated.nbTurn -= 1
         dispatch(updateTurn(turnUpdated))
         console.log('turnUpdated first')
         console.log(turnUpdated)
@@ -252,7 +276,35 @@ class World extends React.Component {
         this.setState({
           turnState: currentNbTurn
         })
-        this.blockPlayable(el)
+        if (currentNbTurn.nbTurn === 0) {
+          console.log('last turn for first')
+          isEnded = true
+          this.setState({
+            firstEnd: isEnded
+          })
+          if (number.secondNb === null) {
+            console.log('next player')
+            console.log('second = null')
+            isEnded = false
+            this.setState({
+              firstEnd: isEnded
+            })
+            newNumber(undefined)
+            playerUpdated = nextPlayer(player)
+            dispatch(updatePlayer(playerUpdated))
+            console.log(playerUpdated)
+            this.firstBlockPlayable(playerUpdated)
+            currentNbTurn.type = 'init'
+            this.setState({
+              turnState: currentNbTurn
+            })
+          } else {
+            this.firstBlockPlayable(player)
+          }
+        } else {
+          console.log('next turn')
+          this.blockPlayable(el)
+        }
       }
     } else {
       console.log('firstEnd true')
@@ -267,9 +319,14 @@ class World extends React.Component {
         playerUpdated = nextPlayer(player)
         dispatch(updatePlayer(playerUpdated))
         this.firstBlockPlayable(playerUpdated)
+        currentNbTurn.type = 'init'
+        this.setState({
+          turnState: currentNbTurn
+        })
       } else {
         console.log('nbTurn =! 0')
-        turnUpdated = newTurn(number.number.secondNb, turn)
+        turnUpdated = newTurn(number.secondNb, turn)
+        turnUpdated.nbTurn -= 1
         dispatch(updateTurn(turnUpdated))
         console.log('turnUpdated second')
         console.log(turnUpdated)
@@ -281,13 +338,13 @@ class World extends React.Component {
     }
 
     /* // NEW TURN
-    if (!firstEnd || number.number.secondNb === null) {
-      turnUpdated = newTurn(number.number.firstNb, turn)
+    if (!firstEnd || number.secondNb === null) {
+      turnUpdated = newTurn(number.firstNb, turn)
       dispatch(updateTurn(turnUpdated))
       console.log('turnUpdated first')
       console.log(turnUpdated)
     } else {
-      turnUpdated = newTurn(number.number.secondNb, turn)
+      turnUpdated = newTurn(number.secondNb, turn)
       dispatch(updateTurn(turnUpdated))
       console.log('turnUpdated second')
       console.log(turnUpdated)
@@ -298,7 +355,7 @@ class World extends React.Component {
       console.log(number)
       if (await firstEnd) { // nombre 1 fini
         console.log('1 fini')
-        if (number.number.secondNb === null) { // second Number null
+        if (number.secondNb === null) { // second Number null
           console.log('2 null')
           this.setState({
             firstEnd: false
