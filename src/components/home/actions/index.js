@@ -46,7 +46,7 @@ export const nextWorld = (id, w, player) => {
   store.dispatch(updateWorld(world))
 }
 
-export const newNumber = (number) => {
+export const newNumber = (number, flag) => {
   const isArray = Array.isArray(number)
   let first = null
   let second = null
@@ -58,17 +58,19 @@ export const newNumber = (number) => {
     first = number
     second = null
   }
+  console.log('-----------')
+  console.log(first)
+  console.log(number)
   const numberUpdate = {
     firstNb: first,
-    secondNb: second
+    secondNb: second,
+    flag
   }
   store.dispatch(updateNumber(numberUpdate))
 }
 
 export const newTurn = (number, actualTurn) => {
   let turn = {}
-  console.log(number)
-  console.log(actualTurn.nbTurn)
   if (actualTurn.nbTurn === 0) {
     switch (number) {
       case 1:

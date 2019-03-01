@@ -27,19 +27,15 @@ class World extends React.Component {
   }
 
   componentWillUpdate(nextProps) {
-    const { number } = this.props
-    console.log(number)
-    // console.log(nextProps.home.turn)
-    console.log(nextProps.home.number)
-    if (number !== nextProps.home.number) {
+    // console.log('componentWillUpdate')
+    /* console.log(this.props)
+    console.log(nextProps)
+    console.log(nextProps.number) */
+    // console.log(nextProps.number.flag)
+    if (nextProps.number.flag) {
+      // ICI sate = props de turn
       console.log('iciii')
-      /* this.setState({
-        turnState: nextProps.turnState
-      }) */
-      /* this.state = {
-        turnState: nextProps.home.turn
-      } */
-      // console.log(this.props)
+      this.test(nextProps)
     }
   }
 
@@ -65,6 +61,17 @@ class World extends React.Component {
       default:
         element.style.backgroundColor = 'white'
     }
+  }
+
+  test(nextProps) {
+    this.setState({
+      turnState: nextProps.turn
+    })
+    /* console.log(this.props)
+    console.log(nextProps)
+    console.log(this.state) */
+    console.log(nextProps.number)
+    newNumber(nextProps.number, false)
   }
 
   blockPlayable(el) {
@@ -107,7 +114,6 @@ class World extends React.Component {
 
   firstBlockPlayable(player) {
     const { world, turn } = this.props // ICI props vienne pas de home ?
-    console.log(this.props)
     let el
     let colorBlock
     let element
@@ -227,7 +233,6 @@ class World extends React.Component {
       turn
     } = home
     const { firstEnd, turnState } = this.state
-    console.log(this.state)
     let currentNbTurn = turnState
     let isEnded = firstEnd
     let playerUpdated = player
@@ -236,12 +241,12 @@ class World extends React.Component {
     // ici appel mais sert a rien
     // nextWorld(el.id, world, player)
     this.setBlock(el, player)
-    console.log(currentNbTurn)
-
+    console.log('bla')
+    console.log(number)
     if (!isEnded) {
       console.log('firstEnd false')
       // ICI prio 2eme joueur jou sur plusieur tour , turn = 0
-      if (currentNbTurn.nbTurn === 0 && turn.type !== 'init') {
+      if (currentNbTurn.nbTurn === 0) {
         console.log('nbTurn = 0')
         if (number.secondNb === null) {
           console.log('second = null')
@@ -250,7 +255,7 @@ class World extends React.Component {
             firstEnd: isEnded
           })
           console.log('next player')
-          newNumber(undefined)
+          newNumber(undefined, false)
           playerUpdated = nextPlayer(player)
           dispatch(updatePlayer(playerUpdated))
           this.firstBlockPlayable(playerUpdated)
@@ -289,10 +294,9 @@ class World extends React.Component {
             this.setState({
               firstEnd: isEnded
             })
-            newNumber(undefined)
+            newNumber(undefined, false)
             playerUpdated = nextPlayer(player)
             dispatch(updatePlayer(playerUpdated))
-            console.log(playerUpdated)
             this.firstBlockPlayable(playerUpdated)
             currentNbTurn.type = 'init'
             this.setState({
@@ -315,7 +319,7 @@ class World extends React.Component {
           firstEnd: isEnded
         })
         console.log('next player')
-        newNumber(undefined)
+        newNumber(undefined, false)
         playerUpdated = nextPlayer(player)
         dispatch(updatePlayer(playerUpdated))
         this.firstBlockPlayable(playerUpdated)

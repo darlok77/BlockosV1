@@ -20,7 +20,7 @@ class Home extends Component {
           <World world={world} player={player} number={number} turn={turn} />
         </div>
         <div className="rightLayout">
-          <RightLayout number={number} />
+          <RightLayout number={number} turn={turn} />
         </div>
       </div>
     )

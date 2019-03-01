@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { newNumber } from '../actions'
+import { newNumber, newTurn, updateTurn } from '../actions'
 
 class RightLayout extends React.Component {
   constructor(props) {
@@ -22,6 +22,7 @@ class RightLayout extends React.Component {
 
   handleClickChoice(nbChoice) {
     const { number } = this.state
+    const { dispatch, turn } = this.props
     let choice
 
     this.setState({ diceRolling: true })
@@ -36,7 +37,9 @@ class RightLayout extends React.Component {
       default:
         choice = number.first
     }
-    newNumber(choice)
+    newNumber(choice, true)
+    const turnUpdated = newTurn(number.first[0], turn)
+    dispatch(updateTurn(turnUpdated))
   }
 
   randomNumber() {
