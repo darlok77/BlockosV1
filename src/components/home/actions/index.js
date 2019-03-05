@@ -25,14 +25,12 @@ export const updateTurn = turn => ({
 export const nextPlayer = (player) => {
   let p = player
 
-  if (p < 5) {
+  if (p < 4) {
     p += 1
-
     return p
   }
 
   p = 1
-
   return p
 }
 
@@ -47,23 +45,10 @@ export const nextWorld = (id, w, player) => {
 }
 
 export const newNumber = (number, flag) => {
-  const isArray = Array.isArray(number)
-  let first = null
-  let second = null
-  if (isArray) {
-    [first, second] = number
-    console.log('is a array')
-  } else {
-    console.log('is not a array')
-    first = number
-    second = null
-  }
-  console.log('-----------')
-  console.log(first)
-  console.log(number)
+  const { firstNb, secondNb } = number
   const numberUpdate = {
-    firstNb: first,
-    secondNb: second,
+    firstNb,
+    secondNb,
     flag
   }
   store.dispatch(updateNumber(numberUpdate))
@@ -72,41 +57,36 @@ export const newNumber = (number, flag) => {
 export const newTurn = (number, actualTurn) => {
   let turn = {}
   if (actualTurn.nbTurn === 0) {
+    console.log(`number reçu: ${number}`)
+
     switch (number) {
       case 1:
         turn.nbTurn = 1
         turn.type = 'destroy'
-        console.log('recois 1')
         break
       case 2:
         turn.nbTurn = 1
         turn.type = 'def'
-        console.log('recois 2')
         break
       case 3:
         turn.nbTurn = 2
         turn.type = 'def'
-        console.log('recois 3')
         break
       case 4:
         turn.nbTurn = 3
         turn.type = 'def'
-        console.log('recois 4')
         break
       case 5:
         turn.nbTurn = 1
         turn.type = 'att'
-        console.log('recois 5')
         break
       case 6:
         turn.nbTurn = 2
         turn.type = 'att'
-        console.log('recois 6')
         break
       default:
         turn.nbTurn = 0
         turn.type = 'init'
-        console.log('bug')
     }
   } else {
     turn = actualTurn

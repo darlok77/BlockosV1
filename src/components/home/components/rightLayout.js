@@ -7,45 +7,74 @@ class RightLayout extends React.Component {
   constructor(props) {
     super(props)
     const possibility = {
-      first: [3, 2],
-      second: 5
+      first: {
+        firstNb: null,
+        secondNb: null
+      },
+      second: {
+        firstNb: null,
+        secondNb: null
+      }
     }
     this.state = {
       number: possibility,
-      diceRolling: true
+      diceRolling: false
     }
   }
 
   handleClick() {
-    this.setState({ diceRolling: false })
+    const number = this.randomNumber()
+    this.setState({
+      diceRolling: true,
+      number
+    })
   }
 
   handleClickChoice(nbChoice) {
     const { number } = this.state
     const { dispatch, turn } = this.props
-    let choice
+    let choice = {}
+    let turnUpdated
 
-    this.setState({ diceRolling: true })
+    this.setState({ diceRolling: false })
 
     switch (nbChoice) {
-      case 1:
-        choice = number.first
+      case 1: // triche
+        choice = {
+          firstNb: number.first[0],
+          secondNb: number.first[1]
+          /* firstNb: 4,
+          secondNb: 6 */
+        }
+        turnUpdated = newTurn(number.first[0], turn)
+        // turnUpdated = newTurn(4, turn)
         break
       case 2:
-        choice = number.second
+        choice = {
+          firstNb: number.second,
+          secondNb: null
+        }
+        turnUpdated = newTurn(number.second, turn)
         break
       default:
-        choice = number.first
+        choice = {
+          firstNb: null,
+          secondNb: null
+        }
     }
     newNumber(choice, true)
-    const turnUpdated = newTurn(number.first[0], turn)
     dispatch(updateTurn(turnUpdated))
   }
 
   randomNumber() {
-    const number1 = Math.floor(Math.random() * (7 - 1) + 1)
-    const number2 = Math.floor(Math.random() * (7 - 1) + 1)
+    let number1 = Math.floor(Math.random() * (7 - 1) + 1)
+    let number2 = Math.floor(Math.random() * (7 - 1) + 1)
     const sum = number1 + number2
+    if (number1 > number2) {
+      number1 += number2
+      number2 = number1 - number2
+      number1 -= number2
+    }
     const possibility = {
       first: [number1, number2]
     }
@@ -60,26 +89,29 @@ class RightLayout extends React.Component {
     const { diceRolling, number } = this.state
     let choiceLabel
     let choice = 'hidden'
+    let choiceSecond = 'hidden'
 
-    if (!diceRolling) {
+    if (diceRolling) {
       if (number.second === undefined) {
         choiceLabel = `Vous avez fait ${number.first[0]} et ${number.first[1]}`
+        choice = ''
       } else {
         choiceLabel = `Vous avez fait ${number.first[0]} et ${number.first[1]} mais vous pouvez choisir ${number.second}`
         choice = ''
+        choiceSecond = ''
       }
     }
 
     return (
       <div>
-        <button type="button" disabled={!diceRolling} onClick={this.handleClick.bind(this)}> roll the dice </button>
+        <button type="button" disabled={diceRolling} onClick={this.handleClick.bind(this)}> roll the dice </button>
         <div>
           <p hidden={choice}>{choiceLabel}</p>
           <button type="button" hidden={choice} onClick={() => { this.handleClickChoice(1) }}>
             {`${number.first[0]} et ${number.first[1]}`}
           </button>
 
-          <button type="button" hidden={choice} onClick={() => { this.handleClickChoice(2) }}>
+          <button type="button" hidden={choiceSecond} onClick={() => { this.handleClickChoice(2) }}>
             {`${number.second}`}
           </button>
         </div>
