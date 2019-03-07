@@ -23,64 +23,75 @@ class World extends React.Component {
 
   componentDidMount() {
     this.initBlock()
-    this.firstBlockPlayable(1) // ici component will update si il y a un number mettre celu la a -2
+    this.firstBlockPlayable(null, null)
+    // ici component will update si il y a un number mettre celu la a -2
   }
 
   componentWillUpdate(nextProps) {
     // console.log('componentWillUpdate')
     if (nextProps.number.flag) {
-      this.test(nextProps)
+      this.newPlayerTurn(nextProps)
     }
   }
 
   setBlock(el, player) {
     const element = el
+    const { home } = this.props
+    const { turn } = home
+    const entity0 = 'entity0'
+    const entity1 = 'entity1'
+    const entity2 = 'entity2'
+    const entity3 = 'entity3'
+    const entity4 = 'entity4'
     switch (player) {
       case 1:
-        element.className = 'entity1'
+        element.className = entity1
         element.dataset.value = 1
+        this.blockDestroy(entity1, undefined)
         break
       case 2:
-        element.className = 'entity2'
+        element.className = entity2
         element.dataset.value = 2
+        this.blockDestroy(entity2, undefined)
         break
       case 3:
-        element.className = 'entity3'
+        element.className = entity3
         element.dataset.value = 3
+        this.blockDestroy(entity3, undefined)
         break
       case 4:
-        element.className = 'entity4'
+        element.className = entity4
         element.dataset.value = 4
+        this.blockDestroy(entity4, undefined)
         break
       default:
-        element.className = 'entity0'
+        element.className = entity0
         element.dataset.value = 0
+        this.blockDestroy(entity0, undefined)
+    }
+    if (turn.type === 'destroy') {
+      element.className = 'entity-1'
+      element.dataset.value = -1
     }
   }
 
-  test(nextProps) {
-    this.setState({
-      turnState: nextProps.turn
-    })
-
-    newNumber(nextProps.number, false)
-  }
-
-  blockDestroyable(entity) {
-    const { world } = this.props // ICI props vienne pas de home ?
-    let el = ''
-
-    world.forEach((row, rowIndex) => {
-      row.forEach((col, colIndex) => {
-        el = document.querySelector(`#I${rowIndex}_${colIndex}`)
-        el.style.pointerEvents = 'none'
-        el.style.opacity = '0.33'
-        if (el.className !== entity && (el.textContent === '0' || el.textContent === 'T')) {
-          el.style.pointerEvents = 'auto'
-          el.style.opacity = '1'
-        }
-      })
-    })
+  setPlayableAfterDestroy(x, y) {
+    const elLeft = document.querySelector(`#I${x}_${y - 1}`)
+    const elRight = document.querySelector(`#I${x}_${y + 1}`)
+    const elTop = document.querySelector(`#I${x - 1}_${y}`)
+    const elBottom = document.querySelector(`#I${x + 1}_${y}`)
+    if (elLeft !== null) {
+      this.elPlayable(elLeft)
+    }
+    if (elRight !== null) {
+      this.elPlayable(elRight)
+    }
+    if (elTop !== null) {
+      this.elPlayable(elTop)
+    }
+    if (elBottom !== null) {
+      this.elPlayable(elBottom)
+    }
   }
 
   nextBlockPlayable(el) {
@@ -93,50 +104,31 @@ class World extends React.Component {
     const elRight = document.querySelector(`#I${idRow}_${idCol + 1}`)
     const elTop = document.querySelector(`#I${idRow - 1}_${idCol}`)
     const elBottom = document.querySelector(`#I${idRow + 1}_${idCol}`)
-    let elem = ''
+    let element = ''
     let base = ''
-    const elPlayable = (element) => {
-      const nextBlock = element
-      const dataValue = nextBlock.dataset.value
-      if (dataValue === '1' || dataValue === '2' || dataValue === '3' || dataValue === '4') {
-        // belong to a player
-        /* if (dataValue === player.toString(10)) { // not our block
-          console.log('======')
-          nextBlock.style.pointerEvents = 'auto'
-          nextBlock.style.opacity = '1'
-        } else */
-        if (nextBlock.textContent === 'V' || nextBlock.textContent === 'B') { // is a base or village
-          nextBlock.style.pointerEvents = 'auto'
-          nextBlock.style.opacity = '1'
-        }
-      } else if (dataValue !== 'X' && dataValue !== '-1') {
-        nextBlock.style.pointerEvents = 'auto'
-        nextBlock.style.opacity = '1'
-      }
-    }
 
     world.forEach((row, rowIndex) => {
       row.forEach((col, colIndex) => {
-        elem = document.querySelector(`#I${rowIndex}_${colIndex}`)
-        elem.style.pointerEvents = 'none'
-        elem.style.opacity = '0.33'
-        if (elem.className === el.className && elem.textContent === 'B') {
-          base = elem
+        element = document.querySelector(`#I${rowIndex}_${colIndex}`)
+        element.style.pointerEvents = 'none'
+        element.style.opacity = '0.33'
+        if (element.className === el.className && element.textContent === 'B') {
+          base = element
         }
       })
     })
 
     if (elLeft !== null && this.friendlyNeighbor(idRow, idCol - 1, el.className)) {
-      elPlayable(elLeft)
+      this.elPlayable(elLeft)
     }
-    if (elRight !== null && this.friendlyNeighbor(idRow, idCol, el.className)) {
-      elPlayable(elRight)
+    if (elRight !== null && this.friendlyNeighbor(idRow, idCol + 1, el.className)) {
+      this.elPlayable(elRight)
     }
     if (elTop !== null && this.friendlyNeighbor(idRow - 1, idCol, el.className)) {
-      elPlayable(elTop)
+      this.elPlayable(elTop)
     }
     if (elBottom !== null && this.friendlyNeighbor(idRow + 1, idCol, el.className)) {
-      elPlayable(elBottom)
+      this.elPlayable(elBottom)
     }
     base.style.pointerEvents = 'none'
     base.style.opacity = '0.33'
@@ -179,7 +171,7 @@ class World extends React.Component {
     })
   }
 
-  firstBlockPlayable(player) {
+  firstBlockPlayable(player, type) {
     let entity
 
     switch (player) {
@@ -201,7 +193,98 @@ class World extends React.Component {
 
     // console.log(`turn = ${turn.nbTurn}`)
     // console.log(`player = ${player}`)
-    this.blockPlayable(entity)
+    if (type !== 'destroy') {
+      this.blockPlayable(entity)
+    } else {
+      this.blockDestroyable(entity)
+    }
+  }
+
+  elPlayable(element) {
+    const el = element
+    const dataValue = el.dataset.value
+    console.log(element)
+    console.log(dataValue)
+    if (dataValue === '1' || dataValue === '2' || dataValue === '3' || dataValue === '4') {
+      // belong to a player
+      if (el.textContent === 'V' || el.textContent === 'B') { // is a base or village
+        el.style.pointerEvents = 'auto'
+        el.style.opacity = '1'
+      }
+    } else if (dataValue !== 'X' && dataValue !== '-1') {
+      el.style.pointerEvents = 'auto'
+      el.style.opacity = '1'
+    }
+  }
+
+  blockDestroyable(entity) {
+    console.log('blockDestroyable')
+    const { world } = this.props // ICI props vienne pas de home ?
+    let el = ''
+
+    world.forEach((row, rowIndex) => {
+      row.forEach((col, colIndex) => {
+        el = document.querySelector(`#I${rowIndex}_${colIndex}`)
+        el.style.pointerEvents = 'none'
+        el.style.opacity = '0.33'
+        if (el.className !== entity && el.className !== 'entity0' && el.className !== 'entity-1') {
+          if (el.textContent !== 'B' && el.textContent !== 'X' && el.textContent !== 'V') {
+            el.style.pointerEvents = 'auto'
+            el.style.opacity = '1'
+          }
+        }
+      })
+    })
+  }
+
+  newPlayerTurn(nextProps) {
+    this.setState({
+      turnState: nextProps.turn
+    })
+    newNumber(nextProps.number, false)
+    this.firstBlockPlayable(nextProps.player, nextProps.turn.type)
+    this.blockDestroy(`entity${nextProps.player}`, undefined)
+  }
+
+  // this.haveFriendly = si a des voisin les et visible et renvoi true
+  // this.DestroyNeighbor = renvoi un tableau avec les id des voisin qui sont detruit
+  destroyLoop(x, y, entity, callback) {
+    const tabNeighbord = this.DestroyNeighbor(x, y)
+    if (this.friendlyNeighbor(x, y, entity)) {
+      this.setPlayableAfterDestroy(x, y, entity)
+    }
+    if (tabNeighbord.length !== 0) {
+      tabNeighbord.forEach((neighbord) => {
+        const parseId = neighbord.split('_', 2)
+        const idRow = parseInt(parseId[0].substr(1), 10)
+        const idCol = parseInt(parseId[1], 10)
+        if (this.friendlyNeighbor(x, y, entity)) {
+          this.setPlayableAfterDestroy(idRow, idCol, entity)
+          callback(idRow, idCol, entity)
+        }
+      })
+    }
+  }
+
+  blockDestroy(entity, element) {
+    const { world } = this.props // ICI props vienne pas de home ?
+    let el
+
+    if (!element) {
+      world.forEach((row, rowIndex) => {
+        row.forEach((col, colIndex) => {
+          el = document.querySelector(`#I${rowIndex}_${colIndex}`)
+          if (el.className === 'entity-1') {
+            this.destroyLoop(rowIndex, colIndex, entity, () => {})
+          }
+        })
+      })
+    } else {
+      const parseId = element.id.split('_', 2)
+      const idRow = parseInt(parseId[0].substr(1), 10)
+      const idCol = parseInt(parseId[1], 10)
+      this.destroyLoop(idRow, idCol, entity, () => {})
+    }
   }
 
   friendlyNeighbor(x, y, entity) {
@@ -210,19 +293,41 @@ class World extends React.Component {
     const elTop = document.querySelector(`#I${x - 1}_${y}`)
     const elBottom = document.querySelector(`#I${x + 1}_${y}`)
 
-    if (elLeft !== null && (elLeft.className === entity || elLeft.className === 'entity-1')) {
+    if (elLeft !== null && (elLeft.className === entity)) {
       return true
     }
-    if (elRight !== null && (elRight.className === entity || elRight.className === 'entity-1')) {
+    if (elRight !== null && (elRight.className === entity)) {
       return true
     }
-    if (elTop !== null && (elTop.className === entity || elTop.className === 'entity-1')) {
+    if (elTop !== null && (elTop.className === entity)) {
       return true
     }
-    if (elBottom !== null && (elBottom.className === entity || elBottom.className === 'entity-1')) {
+    if (elBottom !== null && (elBottom.className === entity)) {
       return true
     }
     return false
+  }
+
+  DestroyNeighbor(x, y) {
+    const elLeft = document.querySelector(`#I${x}_${y - 1}`)
+    const elRight = document.querySelector(`#I${x}_${y + 1}`)
+    const elTop = document.querySelector(`#I${x - 1}_${y}`)
+    const elBottom = document.querySelector(`#I${x + 1}_${y}`)
+    const tabNeighbord = []
+
+    if (elLeft !== null && elLeft.className === 'entity-1') {
+      tabNeighbord.push(elLeft.id)
+    }
+    if (elRight !== null && elRight.className === 'entity-1') {
+      tabNeighbord.push(elRight.id)
+    }
+    if (elTop !== null && elTop.className === 'entity-1') {
+      tabNeighbord.push(elTop.id)
+    }
+    if (elBottom !== null && elBottom.className === 'entity-1') {
+      tabNeighbord.push(elBottom.id)
+    }
+    return tabNeighbord
   }
 
   initBlock() {
@@ -304,7 +409,8 @@ class World extends React.Component {
           newNumber(emptyNumber, false)
           playerUpdated = nextPlayer(player)
           dispatch(updatePlayer(playerUpdated))
-          this.firstBlockPlayable(playerUpdated)
+          this.firstBlockPlayable(playerUpdated, null)
+          this.blockDestroy(`entity${playerUpdated}`, undefined)
           currentNbTurn.type = 'init'
           this.setState({
             turnState: currentNbTurn
@@ -343,14 +449,16 @@ class World extends React.Component {
             newNumber(emptyNumber, false)
             playerUpdated = nextPlayer(player)
             dispatch(updatePlayer(playerUpdated))
-            this.firstBlockPlayable(playerUpdated)
+            this.firstBlockPlayable(playerUpdated, null)
+            this.blockDestroy(`entity${playerUpdated}`, undefined)
             currentNbTurn.type = 'init'
             this.setState({
               turnState: currentNbTurn
             })
           } else {
-            this.firstBlockPlayable(player)
             turnUpdated = newTurn(number.secondNb, turn)
+            this.firstBlockPlayable(player, turnUpdated.type)
+            this.blockDestroy(`entity${playerUpdated}`, undefined)
             dispatch(updateTurn(turnUpdated))
             console.log('turnUpdated in to second')
             console.log(turnUpdated)
@@ -362,6 +470,7 @@ class World extends React.Component {
         } else {
           console.log('next turn')
           this.nextBlockPlayable(el)
+          this.blockDestroy(`entity${playerUpdated}`, el)
         }
       }
     } else {
@@ -376,7 +485,8 @@ class World extends React.Component {
         newNumber(emptyNumber, false)
         playerUpdated = nextPlayer(player)
         dispatch(updatePlayer(playerUpdated))
-        this.firstBlockPlayable(playerUpdated)
+        this.firstBlockPlayable(playerUpdated, null)
+        this.blockDestroy(`entity${playerUpdated}`, undefined)
         currentNbTurn.type = 'init'
         this.setState({
           turnState: currentNbTurn
@@ -406,7 +516,8 @@ class World extends React.Component {
           newNumber(emptyNumber, false)
           playerUpdated = nextPlayer(player)
           dispatch(updatePlayer(playerUpdated))
-          this.firstBlockPlayable(playerUpdated)
+          this.firstBlockPlayable(playerUpdated, null)
+          this.blockDestroy(`entity${playerUpdated}`, undefined)
           currentNbTurn.type = 'init'
           this.setState({
             turnState: currentNbTurn
@@ -414,6 +525,7 @@ class World extends React.Component {
         } else {
           console.log('next turn')
           this.nextBlockPlayable(el)
+          this.blockDestroy(`entity${playerUpdated}`, el)
         }
       }
     }
