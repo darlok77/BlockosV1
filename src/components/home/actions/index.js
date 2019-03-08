@@ -22,6 +22,11 @@ export const updateTurn = turn => ({
   turn
 })
 
+const updateBase = base => ({
+  type: actionsType.UPDATE_BASE,
+  base
+})
+
 export const nextPlayer = (player) => {
   let p = player
 
@@ -92,4 +97,25 @@ export const newTurn = (number, actualTurn) => {
     turn = actualTurn
   }
   return turn
+}
+
+export const newBase = (entityBase, base) => {
+  let baseUpdate = base
+  switch (entityBase) {
+    case 1:
+      baseUpdate.B1 -= 1
+      break
+    case 2:
+      baseUpdate.B2 -= 1
+      break
+    case 3:
+      baseUpdate.B3 -= 1
+      break
+    case 4:
+      baseUpdate.B4 -= 1
+      break
+    default:
+      baseUpdate = base
+  }
+  store.dispatch(updateBase(baseUpdate))
 }

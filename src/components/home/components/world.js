@@ -27,10 +27,19 @@ class World extends React.Component {
     // ici component will update si il y a un number mettre celu la a -2
   }
 
-  componentWillUpdate(nextProps) {
+  componentWillUpdate(nextProps, nextState) {
     // console.log('componentWillUpdate')
+    const { turnState } = this.state
+    if (nextState.turnState !== turnState) {
+      console.log('bla')
+      console.log(nextState.turnState)
+      console.log(turnState)
+    }
     if (nextProps.number.flag) {
       this.newPlayerTurn(nextProps)
+      console.log('ble')
+      console.log(nextState.turnState)
+      console.log(turnState)
     }
   }
 
@@ -203,8 +212,6 @@ class World extends React.Component {
   elPlayable(element) {
     const el = element
     const dataValue = el.dataset.value
-    console.log(element)
-    console.log(dataValue)
     if (dataValue === '1' || dataValue === '2' || dataValue === '3' || dataValue === '4') {
       // belong to a player
       if (el.textContent === 'V' || el.textContent === 'B') { // is a base or village
@@ -238,16 +245,20 @@ class World extends React.Component {
   }
 
   newPlayerTurn(nextProps) {
+    const { turnState } = this.state
+    console.log('ici')
+    console.log(turnState)
+    console.log(nextProps.turn)
     this.setState({
       turnState: nextProps.turn
     })
     newNumber(nextProps.number, false)
-    this.firstBlockPlayable(nextProps.player, nextProps.turn.type)
-    this.blockDestroy(`entity${nextProps.player}`, undefined)
+    this.nextPlayer(nextProps.player)
+    console.log('-------')
+    // this.firstBlockPlayable(nextProps.player, nextProps.turn.type)
+    // this.blockDestroy(`entity${nextProps.player}`, undefined)
   }
 
-  // this.haveFriendly = si a des voisin les et visible et renvoi true
-  // this.DestroyNeighbor = renvoi un tableau avec les id des voisin qui sont detruit
   destroyLoop(x, y, entity, callback) {
     const tabNeighbord = this.DestroyNeighbor(x, y)
     if (this.friendlyNeighbor(x, y, entity)) {
@@ -372,13 +383,125 @@ class World extends React.Component {
     })
   }
 
-  play(el) {
+  playFirstNumber(el) {
     const { dispatch, home } = this.props
     const {
       number,
       player,
       turn
     } = home
+    const { firstEnd, turnState } = this.state
+
+    let currentNbTurn = turnState
+    let isEnded = firstEnd
+    const playerUpdated = player
+    let turnUpdated = turn
+    console.log('playFirstNumber')
+    console.log(turnState)
+
+    if (currentNbTurn.nbTurn === 0) {
+      console.log('nbTurn = 0')
+      if (number.secondNb === null) {
+        console.log('second = null')
+        // this.nextPlayer(player)
+        this.firstBlockPlayable(null, null)
+      } else {
+        console.log('second exist')
+        isEnded = true
+        this.setState({
+          firstEnd: isEnded
+        })
+        this.nextBlockPlayable(el)
+      }
+    } else {
+      console.log('nbTurn != 0')
+      currentNbTurn = this.newTurn(number.firstNb)
+      this.setState({
+        turnState: currentNbTurn
+      })
+      if (currentNbTurn.nbTurn === 0) {
+        console.log('last turn for first')
+        isEnded = true
+        this.setState({
+          firstEnd: isEnded
+        })
+        if (number.secondNb === null) {
+          console.log('second = null')
+          // this.nextPlayer(player)
+          this.firstBlockPlayable(null, null)
+        } else {
+          turnUpdated = newTurn(number.secondNb, turn)
+          this.firstBlockPlayable(player, turnUpdated.type)
+          this.blockDestroy(`entity${playerUpdated}`, undefined)
+          dispatch(updateTurn(turnUpdated))
+          console.log('turnUpdated in to second')
+          console.log(turnUpdated)
+          currentNbTurn = turnUpdated
+          console.log('ici1')
+          this.setState({
+            turnState: currentNbTurn
+          })
+        }
+      } else {
+        console.log('next turn')
+        this.nextBlockPlayable(el)
+        this.blockDestroy(`entity${playerUpdated}`, el)
+      }
+    }
+  }
+
+  playSecondNumber(el) {
+    const { home } = this.props
+    const {
+      number,
+      player
+    } = home
+    const { turnState } = this.state
+    let currentNbTurn = turnState
+    const playerUpdated = player
+    console.log('playSecondNumber')
+    console.log(turnState)
+
+    if (currentNbTurn.nbTurn === 0) {
+      console.log('nbTurn === 0')
+      // this.nextPlayer(player)
+      this.firstBlockPlayable(null, null)
+    } else {
+      console.log('nbTurn =! 0')
+      currentNbTurn = this.newTurn(number.secondNb)
+      this.setState({
+        turnState: currentNbTurn
+      })
+      if (currentNbTurn.nbTurn === 0) {
+        console.log('last turn for second')
+        // this.nextPlayer(player)
+        this.firstBlockPlayable(null, null)
+      } else {
+        console.log('next turn')
+        this.nextBlockPlayable(el)
+        this.blockDestroy(`entity${playerUpdated}`, el)
+      }
+    }
+  }
+
+  newTurn(number) {
+    const { home, dispatch } = this.props
+    const { turn } = home
+    const { turnState } = this.state
+    let currentNbTurn = turnState
+    let turnUpdated = turn
+
+    turnUpdated = newTurn(number, turn)
+    turnUpdated.nbTurn -= 1
+    dispatch(updateTurn(turnUpdated))
+    console.log('turnUpdated')
+    console.log(turnUpdated)
+    currentNbTurn = turnUpdated
+    return currentNbTurn
+  }
+
+  nextPlayer(player) {
+    const { dispatch } = this.props
     const { firstEnd, turnState } = this.state
     const emptyNumber = {
       first: {
@@ -390,144 +513,35 @@ class World extends React.Component {
         secondNb: null
       }
     }
-    let currentNbTurn = turnState
-    let isEnded = firstEnd
     let playerUpdated = player
-    let turnUpdated = turn
+    const currentNbTurn = turnState
+    let isEnded = firstEnd
+    console.log(currentNbTurn)
+    console.log('next player')
+    isEnded = false
+    this.setState({
+      firstEnd: isEnded
+    })
+    newNumber(emptyNumber, false)
+    playerUpdated = nextPlayer(player)
+    dispatch(updatePlayer(playerUpdated))
+    this.firstBlockPlayable(playerUpdated, null)
+    this.blockDestroy(`entity${playerUpdated}`, undefined)
+    currentNbTurn.type = 'init'
+    this.setState({
+      turnState: currentNbTurn
+    })
+    console.log(this.state)
+  }
+
+  play(el) {
+    const { firstEnd } = this.state
+    const isEnded = firstEnd
 
     if (!isEnded) {
-      console.log('firstEnd false')
-      if (currentNbTurn.nbTurn === 0) {
-        console.log('nbTurn = 0')
-        if (number.secondNb === null) {
-          console.log('second = null')
-          isEnded = false
-          this.setState({
-            firstEnd: isEnded
-          })
-          console.log('next player')
-          newNumber(emptyNumber, false)
-          playerUpdated = nextPlayer(player)
-          dispatch(updatePlayer(playerUpdated))
-          this.firstBlockPlayable(playerUpdated, null)
-          this.blockDestroy(`entity${playerUpdated}`, undefined)
-          currentNbTurn.type = 'init'
-          this.setState({
-            turnState: currentNbTurn
-          })
-        } else {
-          console.log('second exist')
-          isEnded = true
-          this.setState({
-            firstEnd: isEnded
-          })
-        }
-      } else {
-        console.log('nbTurn != 0')
-        turnUpdated = newTurn(number.firstNb, turn)
-        turnUpdated.nbTurn -= 1
-        dispatch(updateTurn(turnUpdated))
-        console.log('turnUpdated first')
-        console.log(turnUpdated)
-        currentNbTurn = turnUpdated
-        this.setState({
-          turnState: currentNbTurn
-        })
-        if (currentNbTurn.nbTurn === 0) {
-          console.log('last turn for first')
-          isEnded = true
-          this.setState({
-            firstEnd: isEnded
-          })
-          if (number.secondNb === null) {
-            console.log('next player')
-            console.log('second = null')
-            isEnded = false
-            this.setState({
-              firstEnd: isEnded
-            })
-            newNumber(emptyNumber, false)
-            playerUpdated = nextPlayer(player)
-            dispatch(updatePlayer(playerUpdated))
-            this.firstBlockPlayable(playerUpdated, null)
-            this.blockDestroy(`entity${playerUpdated}`, undefined)
-            currentNbTurn.type = 'init'
-            this.setState({
-              turnState: currentNbTurn
-            })
-          } else {
-            turnUpdated = newTurn(number.secondNb, turn)
-            this.firstBlockPlayable(player, turnUpdated.type)
-            this.blockDestroy(`entity${playerUpdated}`, undefined)
-            dispatch(updateTurn(turnUpdated))
-            console.log('turnUpdated in to second')
-            console.log(turnUpdated)
-            currentNbTurn = turnUpdated
-            this.setState({
-              turnState: currentNbTurn
-            })
-          }
-        } else {
-          console.log('next turn')
-          this.nextBlockPlayable(el)
-          this.blockDestroy(`entity${playerUpdated}`, el)
-        }
-      }
+      this.playFirstNumber(el)
     } else {
-      console.log('firstEnd true')
-      if (currentNbTurn.nbTurn === 0) {
-        console.log('nbTurn === 0')
-        isEnded = false
-        this.setState({
-          firstEnd: isEnded
-        })
-        console.log('next player')
-        newNumber(emptyNumber, false)
-        playerUpdated = nextPlayer(player)
-        dispatch(updatePlayer(playerUpdated))
-        this.firstBlockPlayable(playerUpdated, null)
-        this.blockDestroy(`entity${playerUpdated}`, undefined)
-        currentNbTurn.type = 'init'
-        this.setState({
-          turnState: currentNbTurn
-        })
-      } else {
-        console.log('nbTurn =! 0')
-        turnUpdated = newTurn(number.secondNb, turn)
-        turnUpdated.nbTurn -= 1
-        dispatch(updateTurn(turnUpdated))
-        console.log('turnUpdated second')
-        console.log(turnUpdated)
-        currentNbTurn = turnUpdated
-        this.setState({
-          turnState: currentNbTurn
-        })
-        if (currentNbTurn.nbTurn === 0) {
-          console.log('last turn for second')
-          isEnded = true
-          this.setState({
-            firstEnd: isEnded
-          })
-          console.log('next player')
-          isEnded = false
-          this.setState({
-            firstEnd: isEnded
-          })
-          newNumber(emptyNumber, false)
-          playerUpdated = nextPlayer(player)
-          dispatch(updatePlayer(playerUpdated))
-          this.firstBlockPlayable(playerUpdated, null)
-          this.blockDestroy(`entity${playerUpdated}`, undefined)
-          currentNbTurn.type = 'init'
-          this.setState({
-            turnState: currentNbTurn
-          })
-        } else {
-          console.log('next turn')
-          this.nextBlockPlayable(el)
-          this.blockDestroy(`entity${playerUpdated}`, el)
-        }
-      }
+      this.playSecondNumber(el)
     }
   }
 
