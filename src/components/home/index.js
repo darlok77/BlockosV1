@@ -11,16 +11,17 @@ class Home extends Component {
       world,
       player,
       number,
-      turn
+      turn,
+      base
     } = home
 
     return (
       <div>
         <div className="leftLayout">
-          <World world={world} player={player} number={number} turn={turn} />
+          <World world={world} player={player} number={number} turn={turn} base={base} />
         </div>
         <div className="rightLayout">
-          <RightLayout number={number} turn={turn} />
+          <RightLayout turn={turn} base={base} />
         </div>
       </div>
     )

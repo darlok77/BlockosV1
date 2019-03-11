@@ -54,15 +54,12 @@ export default {
     ['W', 'W', 'W', 'W', 'W', 'W', 0, 0, 0, 0, 0, 0, 'T4', 0, 0, 0, 0, 0, 0, 'W', 'W', 'W', 'W', 'W', 'W']
   ],
   player: 0,
-  number: {},
+  number: {
+    flag: false
+  },
   turn: {
     nbTurn: 0,
     type: 'init'
   },
-  base: {
-    B1: 10,
-    B2: 10,
-    B3: 10,
-    B4: 10
-  }
+  base: [10, 10, 10, 10]
 }

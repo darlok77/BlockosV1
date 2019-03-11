@@ -27,8 +27,11 @@ const updateBase = base => ({
   base
 })
 
-export const nextPlayer = (player) => {
+export const nextPlayer = (player, base) => {
   let p = player
+  if (base[p] <= 0) {
+    p += 1
+  }
 
   if (p < 4) {
     p += 1
@@ -39,12 +42,13 @@ export const nextPlayer = (player) => {
   return p
 }
 
-export const nextWorld = (id, w, player) => {
-  const world = w
+export const nextWorld = (world) => {
+  // id w player
+  /* const world = w
   const parseId = id.split('_', 2)
   const idRow = parseInt(parseId[0].substr(1), 10)
   const idCol = parseInt(parseId[1], 10)
-  world[idRow][idCol] = player
+  world[idRow][idCol] = player */
 
   store.dispatch(updateWorld(world))
 }
@@ -99,7 +103,7 @@ export const newTurn = (number, actualTurn) => {
   return turn
 }
 
-export const newBase = (entityBase, base) => {
+/* export const newBase = (entityBase, base) => {
   let baseUpdate = base
   switch (entityBase) {
     case 1:
@@ -118,4 +122,7 @@ export const newBase = (entityBase, base) => {
       baseUpdate = base
   }
   store.dispatch(updateBase(baseUpdate))
+} */
+export const newBase = (base) => {
+  store.dispatch(updateBase(base))
 }

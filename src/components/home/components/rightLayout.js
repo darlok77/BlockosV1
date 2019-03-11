@@ -1,7 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { newNumber, newTurn, updateTurn } from '../actions'
+import {
+  newNumber,
+  newTurn,
+  updateTurn,
+  newBase
+} from '../actions'
 
 class RightLayout extends React.Component {
   constructor(props) {
@@ -22,12 +27,20 @@ class RightLayout extends React.Component {
     }
   }
 
-  handleClick() {
+  handleClickRoll() {
     const number = this.randomNumber()
     this.setState({
       diceRolling: true,
       number
     })
+  }
+
+  handleClickPass() {
+    // ici
+    const { base } = this.props
+    base[1] = 0
+    const b = base
+    newBase(b)
   }
 
   handleClickChoice(nbChoice) {
@@ -86,6 +99,7 @@ class RightLayout extends React.Component {
   }
 
   render() {
+    const { base } = this.props
     const { diceRolling, number } = this.state
     let choiceLabel
     let choice = 'hidden'
@@ -104,7 +118,8 @@ class RightLayout extends React.Component {
 
     return (
       <div>
-        <button type="button" disabled={diceRolling} onClick={this.handleClick.bind(this)}> roll the dice </button>
+        <button type="button" disabled={diceRolling} onClick={this.handleClickRoll.bind(this)}> roll the dice </button>
+        <button type="button" hidden={diceRolling} onClick={this.handleClickPass.bind(this)}> pass the number </button>
         <div>
           <p hidden={choice}>{choiceLabel}</p>
           <button type="button" hidden={choice} onClick={() => { this.handleClickChoice(1) }}>
@@ -115,10 +130,24 @@ class RightLayout extends React.Component {
             {`${number.second}`}
           </button>
         </div>
+        <div>
+          <p>{`HP Base player 1 : ${base[0]}`}</p>
+          <p>{`HP Base player 2 : ${base[1]}`}</p>
+          <p>{`HP Base player 3 : ${base[2]}`}</p>
+          <p>{`HP Base player 4 : ${base[3]}`}</p>
+        </div>
       </div>
     )
   }
 }
 
-export default connect(state => state)(RightLayout)
+const mapStateToProps = state => (
+  {
+    turn: state.home.turn,
+    dispatch: state.home.dispatch,
+    base: state.home.base
+  }
+)
+
+export default connect(mapStateToProps)(RightLayout)
 
