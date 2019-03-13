@@ -38,9 +38,7 @@ class RightLayout extends React.Component {
   handleClickPass() {
     // ici
     const { base } = this.props
-    base[1] = 0
-    const b = base
-    newBase(b)
+    newBase(2, base)
   }
 
   handleClickChoice(nbChoice) {
@@ -131,10 +129,10 @@ class RightLayout extends React.Component {
           </button>
         </div>
         <div>
-          <p>{`HP Base player 1 : ${base[0]}`}</p>
-          <p>{`HP Base player 2 : ${base[1]}`}</p>
-          <p>{`HP Base player 3 : ${base[2]}`}</p>
-          <p>{`HP Base player 4 : ${base[3]}`}</p>
+          <p>{`HP Base player 1 : ${base.B1}`}</p>
+          <p>{`HP Base player 2 : ${base.B2}`}</p>
+          <p>{`HP Base player 3 : ${base.B3}`}</p>
+          <p>{`HP Base player 4 : ${base.B4}`}</p>
         </div>
       </div>
     )

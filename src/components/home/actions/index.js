@@ -43,13 +43,6 @@ export const nextPlayer = (player, base) => {
 }
 
 export const nextWorld = (world) => {
-  // id w player
-  /* const world = w
-  const parseId = id.split('_', 2)
-  const idRow = parseInt(parseId[0].substr(1), 10)
-  const idCol = parseInt(parseId[1], 10)
-  world[idRow][idCol] = player */
-
   store.dispatch(updateWorld(world))
 }
 
@@ -103,26 +96,24 @@ export const newTurn = (number, actualTurn) => {
   return turn
 }
 
-/* export const newBase = (entityBase, base) => {
+export const newBase = (player, base) => {
   let baseUpdate = base
-  switch (entityBase) {
-    case 1:
+  switch (player) {
+    case '1':
       baseUpdate.B1 -= 1
       break
-    case 2:
+    case '2':
       baseUpdate.B2 -= 1
       break
-    case 3:
+    case '3':
       baseUpdate.B3 -= 1
       break
-    case 4:
+    case '4':
       baseUpdate.B4 -= 1
       break
     default:
       baseUpdate = base
   }
   store.dispatch(updateBase(baseUpdate))
-} */
-export const newBase = (base) => {
-  store.dispatch(updateBase(base))
+  return baseUpdate
 }
