@@ -11,7 +11,12 @@ import {
   newBase
 } from '../actions'
 
+/** Class World */
 class World extends React.Component {
+  /**
+    * Create a world.
+    * @param {Object} props.
+  */
   constructor(props) {
     super(props)
     this.state = {
@@ -22,13 +27,19 @@ class World extends React.Component {
     this.handleClick = this.handleClick.bind(this)
   }
 
+  /**
+    * component Did Mount.
+  */
   componentDidMount() {
     this.initBlock()
     this.firstBlockPlayable(null, null)
   }
 
+  /**
+    * component Will Update.
+    * @param {Object} nextProps.
+  */
   componentWillUpdate(nextProps) {
-    // console.log('componentWillUpdate')
     if (nextProps.number !== undefined) {
       if (nextProps.number.flag) {
         this.newPlayerTurn(nextProps)
@@ -36,6 +47,11 @@ class World extends React.Component {
     }
   }
 
+  /**
+    * set Block.
+    * @param {Element} el.
+    * @param {Number} player.
+  */
   setBlock(el, player) {
     const element = el
     const { turn, base } = this.props
@@ -83,16 +99,24 @@ class World extends React.Component {
     }
   }
 
+  /**
+    * set Playable After Destroy.
+    * @param {Number} x.
+    * @param {Number} y.
+    * @param {String} type.
+  */
   setPlayableAfterDestroy(x, y, type) {
+    const el = document.querySelector(`#I${x}_${y}`)
     const elLeft = document.querySelector(`#I${x}_${y - 1}`)
     const elRight = document.querySelector(`#I${x}_${y + 1}`)
     const elTop = document.querySelector(`#I${x - 1}_${y}`)
     const elBottom = document.querySelector(`#I${x + 1}_${y}`)
-    let dataValue
-    if (type === 'att') {
+    let dataValue = el.dataset.value
+
+    if (type === 'att' && dataValue === '-1') {
       if (elLeft !== null) {
         dataValue = elLeft.dataset.value
-        if (dataValue !== 0) {
+        if (dataValue !== 0) { // wtf
           this.elPlayable(elLeft)
         }
       }
@@ -117,6 +141,10 @@ class World extends React.Component {
     }
   }
 
+  /**
+    * check Victory.
+    * @param {Object} base.
+  */
   checkVictory(base) {
     const { player } = this.props
     let cpt = 0
@@ -131,6 +159,11 @@ class World extends React.Component {
     }
   }
 
+  /**
+    * parse Element To Id.
+    * @param {Element} el.
+    * return {Array<String>} ids
+  */
   parseElementToId(el) {
     const elId = el.id
     const parseId = elId.split('_', 2)
@@ -141,6 +174,11 @@ class World extends React.Component {
     return ids
   }
 
+  /**
+    * next Block Playable.
+    * @param {Element} el.
+    * @param {String} type.
+  */
   nextBlockPlayable(el, type) {
     const { world } = this.props
     const elId = this.parseElementToId(el)
@@ -179,6 +217,11 @@ class World extends React.Component {
     }
   }
 
+  /**
+    * block Playable.
+    * @param {String} entity.
+    * @param {String} type.
+  */
   blockPlayable(entity, type) {
     const { world } = this.props
     let el
@@ -216,6 +259,11 @@ class World extends React.Component {
     })
   }
 
+  /**
+     * first Block Playable.
+     * @param {Number} player.
+     * @param {String} type.
+  */
   firstBlockPlayable(player, type) {
     let entity
 
@@ -243,6 +291,10 @@ class World extends React.Component {
     }
   }
 
+  /**
+    * el Playable.
+    * @param {Element} element.
+  */
   elPlayable(element) {
     const el = element
     const dataValue = el.dataset.value
@@ -258,6 +310,10 @@ class World extends React.Component {
     }
   }
 
+  /**
+    * block Destroyable.
+    * @param {String} entity.
+  */
   blockDestroyable(entity) {
     console.log('blockDestroyable')
     const { world } = this.props
@@ -280,6 +336,10 @@ class World extends React.Component {
     })
   }
 
+  /**
+    * new Player Turn.
+    * @param {Object} nextProps.
+  */
   newPlayerTurn(nextProps) {
     this.setState({
       turnState: nextProps.turn
@@ -288,22 +348,39 @@ class World extends React.Component {
     this.nextPlayer(nextProps)
   }
 
+  /**
+    * destroy Loop.
+    * @param {Number} x.
+    * @param {Number} y.
+    * @param {String} entity.
+    * @param {String} type.
+    * @param {Callback} callback.
+  */
   destroyLoop(x, y, entity, type, callback) {
-    const tabNeighbord = this.destroyNeighbor(x, y)
-    if (this.friendlyNeighbor(x, y, entity)) {
-      this.setPlayableAfterDestroy(x, y, type)
-    }
-    if (tabNeighbord.length !== 0) {
-      tabNeighbord.forEach((neighbord) => {
-        const elId = this.parseElementToId(neighbord)
-        if (this.friendlyNeighbor(x, y, entity)) {
-          this.setPlayableAfterDestroy(elId[0], elId[1], type)
-          callback(elId[0], elId[1], entity)
-        }
-      })
+    const el = document.querySelector(`#I${x}_${y}`)
+    if (el !== undefined) {
+      const tabNeighbord = this.destroyNeighbor(x, y)
+      if (this.friendlyNeighbor(x, y, entity)) {
+        this.setPlayableAfterDestroy(x, y, type)
+      }
+      if (tabNeighbord.length !== 0) {
+        tabNeighbord.forEach((neighbord) => {
+          const elId = this.parseElementToId(neighbord)
+          if (this.friendlyNeighbor(x, y, entity)) {
+            this.setPlayableAfterDestroy(elId[0], elId[1], type)
+            callback(elId[0], elId[1], entity)
+          }
+        })
+      }
     }
   }
 
+  /**
+    * block Destroy.
+    * @param {String} entity.
+    * @param {Element} element.
+    * @param {String} type.
+  */
   blockDestroy(entity, element, type) {
     const { world } = this.props
     let el
@@ -318,10 +395,20 @@ class World extends React.Component {
       })
     } else {
       const elId = this.parseElementToId(element)
-      this.destroyLoop(elId[0], elId[1], entity, () => {})
+      this.destroyLoop(elId[0], elId[1] - 1, entity, type, () => {})
+      this.destroyLoop(elId[0], elId[1] + 1, entity, type, () => {})
+      this.destroyLoop(elId[0] - 1, elId[1], entity, type, () => {})
+      this.destroyLoop(elId[0] + 1, elId[1], entity, type, () => {})
     }
   }
 
+  /**
+    * friendly Neighbor.
+    * @param {Number} x.
+    * @param {Number} y.
+    * @param {String} entity.
+    * return {Boolean}
+  */
   friendlyNeighbor(x, y, entity) {
     const elLeft = document.querySelector(`#I${x}_${y - 1}`)
     const elRight = document.querySelector(`#I${x}_${y + 1}`)
@@ -343,6 +430,12 @@ class World extends React.Component {
     return false
   }
 
+  /**
+    * destroy Neighbor.
+    * @param {Number} x.
+    * @param {Number} y.
+    * return {Array<Element>} tabNeighbord
+  */
   destroyNeighbor(x, y) {
     const elLeft = document.querySelector(`#I${x}_${y - 1}`)
     const elRight = document.querySelector(`#I${x}_${y + 1}`)
@@ -365,6 +458,9 @@ class World extends React.Component {
     return tabNeighbord
   }
 
+  /**
+    * init Block.
+  */
   initBlock() {
     const { world } = this.props
     let el
@@ -407,6 +503,10 @@ class World extends React.Component {
     })
   }
 
+  /**
+    * play First Number.
+    * @param {Element} el.
+  */
   playFirstNumber(el) {
     const {
       number,
@@ -470,6 +570,10 @@ class World extends React.Component {
     }
   }
 
+  /**
+    * play Second Number.
+    * @param {Element} el.
+  */
   playSecondNumber(el) {
     const {
       number,
@@ -503,6 +607,11 @@ class World extends React.Component {
     }
   }
 
+  /**
+    * new Turn.
+    * @param {Number} number.
+    * return {Object} turnUpdated
+  */
   newTurn(number) {
     const {
       turn,
@@ -518,15 +627,18 @@ class World extends React.Component {
     return turnUpdated
   }
 
+  /**
+    * next Player.
+    * @param {Object} nextProps.
+  */
   nextPlayer(nextProps) {
     const { dispatch } = this.props
     const { firstEnd } = this.state
-    const { base, number, turn } = nextProps
+    const { base, turn } = nextProps
     let { player } = nextProps
     let isEnded = firstEnd
     console.log('next player')
     isEnded = false
-    console.log(number)
     dispatch(updateTurn(turn))
     this.setState({
       firstEnd: isEnded
@@ -537,6 +649,10 @@ class World extends React.Component {
     this.blockDestroy(`entity${player}`, undefined, turn.type)
   }
 
+  /**
+    * next Player.
+    * @param {Element} el.
+  */
   play(el) {
     const { firstEnd } = this.state
 
@@ -547,6 +663,10 @@ class World extends React.Component {
     }
   }
 
+  /**
+    * handle Click.
+    * @param {event} event.
+  */
   handleClick(event) {
     const { player } = this.props
     const el = event.target
@@ -557,6 +677,10 @@ class World extends React.Component {
     this.play(el)
   }
 
+  /**
+    * render.
+    * return {String}
+  */
   render() {
     const { world } = this.props
 
@@ -592,6 +716,11 @@ class World extends React.Component {
   }
 }
 
+/**
+  * map State To Props.
+  * @param {Object} state.
+  * return {Object}
+*/
 const mapStateToProps = state => (
   {
     turn: state.home.turn,

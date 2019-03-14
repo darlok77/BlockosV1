@@ -4,11 +4,15 @@ import { connect } from 'react-redux'
 import {
   newNumber,
   newTurn,
-  updateTurn,
-  newBase
+  updateTurn
 } from '../actions'
 
+/** Class Right Layout */
 class RightLayout extends React.Component {
+  /**
+    * Create a Right Layout.
+    * @param {Object} props.
+  */
   constructor(props) {
     super(props)
     const possibility = {
@@ -23,10 +27,37 @@ class RightLayout extends React.Component {
     }
     this.state = {
       number: possibility,
-      diceRolling: false
+      diceRolling: false,
+      turn: props.turn
     }
   }
 
+  /**
+    * component Will Update.
+    * @param {Object} nextProps.
+  */
+  componentWillUpdate(nextProps) {
+    const { turn } = this.state
+    // console.log(turn)
+    if (nextProps.turn !== turn) {
+      this.setTurnState(nextProps.turn)
+      console.log('ble')
+    }
+  }
+
+  /**
+    * set Turn State.
+    * @param {Object} turn.
+  */
+  setTurnState(turn) {
+    this.setState({
+      turn
+    })
+  }
+
+  /**
+    * handle Click Roll.
+  */
   handleClickRoll() {
     const number = this.randomNumber()
     this.setState({
@@ -35,12 +66,29 @@ class RightLayout extends React.Component {
     })
   }
 
+  /**
+    * handle Click Pass.
+  */
   handleClickPass() {
     // ici
-    const { base } = this.props
-    newBase(2, base)
+    const { number, turn } = this.state
+    let turnNumber = JSON.stringify(turn)
+    turnNumber = JSON.parse(turnNumber)
+    const turnupdated = turn
+    turnupdated.nbTurn = 0
+    const number1 = newTurn(number.first[0], turnupdated)
+    const number2 = newTurn(number.first[1], turnupdated)
+
+    if (turnNumber.nbTurn === number1.nbTurn && turnNumber.type === number1.type) {
+      console.log('bla')
+    } else if (turnNumber.nbTurn === number2.nbTurn && turnNumber.type === number2.type) {
+      console.log('blo')
+    }
   }
 
+  /**
+    * handle Click Choice.
+  */
   handleClickChoice(nbChoice) {
     const { number } = this.state
     const { dispatch, turn } = this.props
@@ -77,6 +125,10 @@ class RightLayout extends React.Component {
     dispatch(updateTurn(turnUpdated))
   }
 
+  /**
+    * random Number.
+    * return {Object} possibility
+  */
   randomNumber() {
     let number1 = Math.floor(Math.random() * (7 - 1) + 1)
     let number2 = Math.floor(Math.random() * (7 - 1) + 1)
@@ -96,6 +148,10 @@ class RightLayout extends React.Component {
     return possibility
   }
 
+  /**
+    * render.
+    * return {String}.
+  */
   render() {
     const { base } = this.props
     const { diceRolling, number } = this.state
@@ -139,6 +195,11 @@ class RightLayout extends React.Component {
   }
 }
 
+/**
+  * mapStateToProps.
+  * @param {Object} state.
+  * return {Object}.
+*/
 const mapStateToProps = state => (
   {
     turn: state.home.turn,
