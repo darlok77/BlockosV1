@@ -38,10 +38,8 @@ class RightLayout extends React.Component {
   */
   componentWillUpdate(nextProps) {
     const { turn } = this.state
-    // console.log(turn)
     if (nextProps.turn !== turn) {
       this.setTurnState(nextProps.turn)
-      console.log('ble')
     }
   }
 
@@ -81,7 +79,9 @@ class RightLayout extends React.Component {
 
     if (turnNumber.nbTurn === number1.nbTurn && turnNumber.type === number1.type) {
       console.log('bla')
+      // dispatch(updateTurn(number2))
     } else if (turnNumber.nbTurn === number2.nbTurn && turnNumber.type === number2.type) {
+      // dispatch(updateTurn(null))
       console.log('blo')
     }
   }
@@ -170,25 +170,53 @@ class RightLayout extends React.Component {
       }
     }
 
+    const style = {
+      B1: {
+        width: `${base.B1}0%`
+      },
+      B2: {
+        width: `${base.B2}0%`
+      },
+      B3: {
+        width: `${base.B3}0%`
+      },
+      B4: {
+        width: `${base.B4}0%`
+      }
+    }
+
     return (
       <div>
-        <button type="button" disabled={diceRolling} onClick={this.handleClickRoll.bind(this)}> roll the dice </button>
-        <button type="button" hidden={diceRolling} onClick={this.handleClickPass.bind(this)}> pass the number </button>
+        <div id="divBtn">
+          <button type="button" disabled={diceRolling} onClick={this.handleClickRoll.bind(this)}> roll the dice </button>
+          <button type="button" hidden={diceRolling} onClick={this.handleClickPass.bind(this)}> pass the number </button>
+        </div>
         <div>
           <p hidden={choice}>{choiceLabel}</p>
           <button type="button" hidden={choice} onClick={() => { this.handleClickChoice(1) }}>
             {`${number.first[0]} et ${number.first[1]}`}
           </button>
-
           <button type="button" hidden={choiceSecond} onClick={() => { this.handleClickChoice(2) }}>
             {`${number.second}`}
           </button>
         </div>
         <div>
           <p>{`HP Base player 1 : ${base.B1}`}</p>
+          <div className="bar">
+            <div className="percentage has-tip" style={style.B1} data-perc={`${base.B1}0%`} />
+          </div>
           <p>{`HP Base player 2 : ${base.B2}`}</p>
+          <div className="bar">
+            <div className="percentage has-tip" style={style.B2} data-perc={`${base.B2}0%`} />
+          </div>
           <p>{`HP Base player 3 : ${base.B3}`}</p>
+          <div className="bar">
+            <div className="percentage has-tip" style={style.B3} data-perc={`${base.B3}0%`} />
+          </div>
           <p>{`HP Base player 4 : ${base.B4}`}</p>
+          <div className="bar">
+            <div className="percentage has-tip" style={style.B4} data-perc={`${base.B4}0%`} />
+          </div>
         </div>
       </div>
     )

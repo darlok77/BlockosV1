@@ -29,12 +29,14 @@ const updateBase = base => ({
 
 export const nextPlayer = (player, base) => {
   let p = player
-  if (base[p] <= 0) {
-    p += 1
-  }
 
+  console.log(p, base)
   if (p < 4) {
     p += 1
+    console.log(base[`B${p}`])
+    if (base[`B${p}`] <= 0) {
+      p += 1
+    }
     return p
   }
 

@@ -2,18 +2,62 @@ $text: rgb(58, 58, 58);
 
 .borderTab{
   border: 1px solid black;
-  width: 20px;
+  width: 27px;
+  height:27px;
   text-align: center;
+
 }
-.rightLayout{
-	float: right;
+
+#app > div {
+  display: grid;
+  grid-template-columns: auto 1fr;
 }
-.leftLayout{
-  float: left;
+
+.rightLayout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
+.rightLayout > div {
+  padding: 3rem;
+  border: solid 1px black;
+}
+
+#divBtn {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-column-gap: 27px;
+  > button {
+    cursor: pointer;
+  }
+}
+
 .block{
-  with:20px;
-  height:20px;
+  padding: 0;
+  baground-color: #ebebe0
+}
+
+.block > div {
+  min-height: 100%;
+  width: 27px;
+}
+
+.bar {
+  width: 30em;
+  height: 1em;
+  border-radius: 0.5em;
+  position: relative;
+  background: #f2f2f2;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+}
+
+.bar .percentage {
+  position: relative;
+  font-size: 1em;
+  background: tomato;
+  height: 1em;
+  border-radius: 0.5em;
 }
 
 .entityW{
@@ -41,7 +85,7 @@ $text: rgb(58, 58, 58);
   background-color: red;
 }
 .entity3{
-  background-color: green;
+  background-color: violet;
 }
 .entity4{
   background-color: yellow;

@@ -193,7 +193,8 @@ class World extends React.Component {
       row.forEach((col, colIndex) => {
         element = document.querySelector(`#I${rowIndex}_${colIndex}`)
         element.style.pointerEvents = 'none'
-        element.style.opacity = '0.33'
+        element.style.filter = 'grayscale(50%)'
+        // element.style.opacity = '0.33'
         if (element.className === el.className && element.textContent === 'B') {
           base = element
         }
@@ -213,7 +214,8 @@ class World extends React.Component {
     }
     if (type !== 'att') {
       base.style.pointerEvents = 'none'
-      base.style.opacity = '0.33'
+      base.style.filter = 'grayscale(50%)'
+      // base.style.opacity = '0.33'
     }
   }
 
@@ -232,7 +234,9 @@ class World extends React.Component {
         el = document.querySelector(`#I${rowIndex}_${colIndex}`)
         dataValue = el.dataset.value
         el.style.pointerEvents = 'none'
-        el.style.opacity = '0.33'
+        // el.style.opacity = '0.33'
+        el.style.filter = 'grayscale(50%)'
+
         /* if (this.friendlyNeighbor(rowIndex, colIndex, entity) && turn.nbTurn !== 0) {
           el.style.pointerEvents = 'none'
           el.style.opacity = '0.33'
@@ -248,11 +252,13 @@ class World extends React.Component {
 
             if (type === 'att' && (el.textContent === 'V' || el.textContent === 'B')) { // is a base or village
               el.style.pointerEvents = 'auto'
-              el.style.opacity = '1'
+              // el.style.opacity = '1'
+              el.style.filter = 'grayscale(0%)'
             }
           } else if (dataValue === '0') {
             el.style.pointerEvents = 'auto'
-            el.style.opacity = '1'
+            // el.style.opacity = '1'
+            el.style.filter = 'grayscale(0%)'
           }
         }
       })
@@ -302,11 +308,13 @@ class World extends React.Component {
       // belong to a player
       if (el.textContent === 'V' || el.textContent === 'B') { // is a base or village
         el.style.pointerEvents = 'auto'
-        el.style.opacity = '1'
+        // el.style.opacity = '1'
+        el.style.filter = 'grayscale(0%)'
       }
     } else if (dataValue !== 'X' && dataValue !== '-1') {
       el.style.pointerEvents = 'auto'
-      el.style.opacity = '1'
+      // el.style.opacity = '1'
+      el.style.filter = 'grayscale(0%)'
     }
   }
 
@@ -325,11 +333,13 @@ class World extends React.Component {
         el = document.querySelector(`#I${rowIndex}_${colIndex}`)
         dataValue = el.dataset.value
         el.style.pointerEvents = 'none'
-        el.style.opacity = '0.33'
+        // el.style.opacity = '0.33'
+        el.style.filter = 'grayscale(50%)'
         if (dataValue !== entity && dataValue !== '0' && dataValue !== '-1') {
           if (el.textContent !== 'B' && el.textContent !== 'X' && el.textContent !== 'V') {
             el.style.pointerEvents = 'auto'
-            el.style.opacity = '1'
+            // el.style.opacity = '1'
+            el.style.filter = 'grayscale(0%)'
           }
         }
       })
@@ -485,19 +495,15 @@ class World extends React.Component {
             el.textContent = 'Z'
             break
           case '1':
-            el.textContent = 'B'
-            break
           case '2':
-            el.textContent = 'B'
-            break
           case '3':
-            el.textContent = 'B'
-            break
           case '4':
             el.textContent = 'B'
+            el.style.backgroundImage = 'url("/asset/image/base_blue.png")'
+            // el.
             break
           default:
-            el.textContent = '0'
+            el.textContent = ''
         }
       })
     })
@@ -695,7 +701,6 @@ class World extends React.Component {
                   key={`${rowIndex}_${colIndex}`}
                 >
                   <div
-                    type="button"
                     className={`entity${col}`}
                     data-value={col}
                     id={`I${rowIndex}_${colIndex}`}
@@ -703,9 +708,7 @@ class World extends React.Component {
                       this.handleClick(event)
                     }
                     }
-                  >
-                    { col }
-                  </div>
+                  />
                 </td>
               ))}
             </tr>
