@@ -95,6 +95,7 @@ class World extends React.Component {
       if (turn.type === 'destroy') {
         element.className = 'entity-1'
         element.dataset.value = -1
+        element.style.backgroundImage = 'url("/asset/image/guillaume-04.png")'
       }
     }
   }
@@ -310,11 +311,13 @@ class World extends React.Component {
         el.style.pointerEvents = 'auto'
         // el.style.opacity = '1'
         el.style.filter = 'grayscale(0%)'
+        el.style.textContent = 'vv'
       }
     } else if (dataValue !== 'X' && dataValue !== '-1') {
       el.style.pointerEvents = 'auto'
       // el.style.opacity = '1'
       el.style.filter = 'grayscale(0%)'
+      el.style.textContent = 'vv'
     }
   }
 
@@ -373,7 +376,7 @@ class World extends React.Component {
       if (this.friendlyNeighbor(x, y, entity)) {
         this.setPlayableAfterDestroy(x, y, type)
       }
-      if (tabNeighbord.length !== 0) {
+      if (tabNeighbord.length !== 0) { // ici
         tabNeighbord.forEach((neighbord) => {
           const elId = this.parseElementToId(neighbord)
           if (this.friendlyNeighbor(x, y, entity)) {
@@ -494,6 +497,9 @@ class World extends React.Component {
           case 'Z':
             el.textContent = 'Z'
             break
+          case '-':
+            el.style.backgroundImage = 'url("/asset/image/guillaume-04.png")'
+            break
           case '1':
           case '2':
           case '3':
@@ -504,6 +510,7 @@ class World extends React.Component {
             break
           default:
             el.textContent = ''
+            el.style.backgroundImage = 'url("/asset/image/guillaume-01.png")'
         }
       })
     })

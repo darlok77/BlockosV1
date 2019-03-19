@@ -98,15 +98,12 @@ class RightLayout extends React.Component {
     this.setState({ diceRolling: false })
 
     switch (nbChoice) {
-      case 1: // triche
+      case 1:
         choice = {
           firstNb: number.first[0],
           secondNb: number.first[1]
-          /* firstNb: 4,
-          secondNb: 6 */
         }
         turnUpdated = newTurn(number.first[0], turn)
-        // turnUpdated = newTurn(4, turn)
         break
       case 2:
         choice = {
